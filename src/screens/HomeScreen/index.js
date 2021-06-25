@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /**
  *
  * @format
@@ -21,7 +22,7 @@ import {
 import Geolocation from 'react-native-geolocation-service';
 import appConfig from '../../../app.json';
 import {getLocation, getLocationUpdates} from '../../functions/location';
-import {styles} from './styles.js';
+import {viewStyles, textStyles} from './styles.js';
 
 // Import types
 import type {Node} from 'react';
@@ -31,9 +32,20 @@ export const HomeScreen = (): Node => {
   const [highAccuracy, setHighAccuracy] = React.useState(true);
   const [locationDialog, setLocationDialog] = React.useState(true);
   const [observing, setObserving] = React.useState(false);
+  const [recording, setRecording] = React.useState(false);
   const [location, setLocation] = React.useState(null);
 
   const watchId = React.useRef(null);
+  const records = React.useRef([]);
+
+  // The actions to perform when recording ends.
+  const stopRecording = () => {
+    setRecording(false);
+    if (records.current && records.current.length) {
+      console.log(records.current);
+    }
+    records.current = [];
+  };
 
   // Use `useCallback` hook to ensure that `removeLocationUpdates` does not
   // change between re-rendering. This is good practice because
@@ -45,6 +57,7 @@ export const HomeScreen = (): Node => {
       Geolocation.clearWatch(watchId.current);
       watchId.current = null;
       setObserving(false);
+      stopRecording();
     }
   }, []);
 
@@ -56,34 +69,58 @@ export const HomeScreen = (): Node => {
     };
   }, [removeLocationUpdates]);
 
-  return (
-    <View style={styles.mainContainer}>
-      {/* <MapView coords={location?.coords || null} /> */}
+  // When the record button is pressed, pushing the current location to the
+  // records ref, which serves as temporary storage of all the GPS data in the
+  // current recording session. This useEffect hook is triggered each time
+  // location is updated.
+  React.useEffect(() => {
+    if (recording) {
+      records.current.push(location);
+    }
+  }, [location, recording]);
 
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}>
-        <View style={styles.buttonContainer}>
-          <View style={styles.buttons}>
-            <Button
-              title={observing ? 'Stop Observing' : 'Start Observing'}
-              onPress={() => {
-                observing
-                  ? removeLocationUpdates()
-                  : getLocationUpdates(
-                      setObserving,
-                      setLocation,
-                      watchId,
-                      highAccuracy,
-                      forceLocation,
-                      locationDialog,
-                    );
-              }}
-              color={observing ? 'red' : '#2196F3'}
-            />
-          </View>
+  return (
+    <View style={viewStyles.container}>
+      {/* <MapView coords={location?.coords || null} /> */}
+      <View style={viewStyles.dummyContentContainer} />
+      <View style={viewStyles.contentContainer}>
+        <View style={viewStyles.buttonContainer}>
+          <TouchableOpacity
+            onPress={() => {
+              observing
+                ? removeLocationUpdates()
+                : getLocationUpdates(
+                    setObserving,
+                    setLocation,
+                    watchId,
+                    highAccuracy,
+                    forceLocation,
+                    locationDialog,
+                  );
+            }}
+            style={[
+              viewStyles.gpsButton,
+              {backgroundColor: observing ? 'red' : '#2196F3'},
+            ]}>
+            <Text style={textStyles.buttonText}>
+              {observing ? 'Stop GPS' : 'Start GPS'}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={
+              // only record if we are already observing GPS
+              () => (recording ? stopRecording() : setRecording(observing))
+            }
+            style={[
+              viewStyles.recordButton,
+              {backgroundColor: recording ? 'red' : '#40ff00'},
+            ]}>
+            <Text style={textStyles.buttonText}>
+              {recording ? 'Stop Record' : 'Start Record'}
+            </Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.result}>
+        <View style={viewStyles.resultContainer}>
           <Text>Latitude: {location?.coords?.latitude || ''}</Text>
           <Text>Longitude: {location?.coords?.longitude || ''}</Text>
           <Text>Accuracy: {location?.coords?.accuracy}</Text>
@@ -94,7 +131,7 @@ export const HomeScreen = (): Node => {
               : ''}
           </Text>
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 };

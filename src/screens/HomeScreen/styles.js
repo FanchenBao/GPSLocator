@@ -7,39 +7,58 @@
 import {StyleSheet} from 'react-native';
 
 // Import types
-import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
+import type {
+  ViewStyleProp,
+  TextStyleProp,
+} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
-export const styles: {[string]: ViewStyleProp} = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-  },
+export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5FCFF',
+  },
+  dummyContentContainer: {
+    flex: 3.5,
   },
   contentContainer: {
-    padding: 12,
-  },
-  option: {
-    flexDirection: 'row',
+    flex: 1,
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: 12,
-  },
-  result: {
-    borderWidth: 1,
-    borderColor: '#666',
-    width: '100%',
-    padding: 10,
+    // borderWidth: 2,
+    // borderColor: 'blue',
   },
   buttonContainer: {
-    alignItems: 'center',
-  },
-  buttons: {
+    flex: 1,
     flexDirection: 'row',
+    alignSelf: 'stretch',
     justifyContent: 'space-around',
+    // borderWidth: 2,
+    // borderColor: 'red',
+  },
+  gpsButton: {
+    justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 12,
-    width: '100%',
+    width: 150,
+    borderRadius: 15,
+  },
+  recordButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 150,
+    borderRadius: 15,
+  },
+  resultContainer: {
+    flex: 2,
+    justifyContent: 'center',
+    width: '70%',
+    padding: 10,
+    // borderWidth: 2,
+    // borderColor: 'black',
+  },
+});
+
+export const textStyles: {[string]: TextStyleProp} = StyleSheet.create({
+  buttonText: {
+    fontSize: 20,
+    color: 'white',
   },
 });
