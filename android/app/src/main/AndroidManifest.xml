@@ -3,6 +3,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- For react-native-geologcation-service
+    See https://github.com/Agontuk/react-native-geolocation-service/blob/master/docs/setup.md#2-permissions -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"

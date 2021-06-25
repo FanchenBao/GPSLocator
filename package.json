@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "react": "17.0.1",
-    "react-native": "0.64.2"
+    "react-native": "0.64.2",
+    "react-native-geolocation-service": "^5.3.0-beta.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.5",
@@ -23,6 +24,7 @@
     "babel-jest": "^26.6.3",
     "eslint": "7.14.0",
     "flow-bin": "^0.154.0",
+    "flow-typed": "^3.3.1",
     "husky": "^6.0.0",
     "jest": "^26.6.3",
     "metro-react-native-babel-preset": "^0.64.0",
