@@ -6,19 +6,7 @@
  */
 
 import * as React from 'react';
-import {
-  Alert,
-  Button,
-  Linking,
-  PermissionsAndroid,
-  Platform,
-  ScrollView,
-  Switch,
-  Text,
-  ToastAndroid,
-  View,
-  TouchableOpacity,
-} from 'react-native';
+import {Alert, Text, View, TouchableOpacity} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import * as RNFS from 'react-native-fs';
 import {format} from 'date-fns';
@@ -30,9 +18,6 @@ import {viewStyles, textStyles} from './styles.js';
 import type {Node} from 'react';
 
 export const HomeScreen = (): Node => {
-  const [forceLocation, setForceLocation] = React.useState(true);
-  const [highAccuracy, setHighAccuracy] = React.useState(true);
-  const [locationDialog, setLocationDialog] = React.useState(true);
   const [observing, setObserving] = React.useState(false);
   const [recording, setRecording] = React.useState(false);
   const [location, setLocation] = React.useState(null);
@@ -108,9 +93,9 @@ export const HomeScreen = (): Node => {
                     setObserving,
                     setLocation,
                     watchId,
-                    highAccuracy,
-                    forceLocation,
-                    locationDialog,
+                    true,
+                    true,
+                    true,
                   );
             }}
             style={[

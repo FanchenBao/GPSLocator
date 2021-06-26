@@ -388,3 +388,6 @@ Temporary Items
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,reactnative
+
+# Ignore Firebase
+**/google-services.json
