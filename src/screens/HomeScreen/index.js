@@ -20,8 +20,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import appConfig from '../../../app.json';
-import {getLocation, getLocationUpdates} from '../../functions/location';
+import * as RNFS from 'react-native-fs';
+import {format} from 'date-fns';
+import Toast from 'react-native-simple-toast';
+import {getLocationUpdates} from '../../functions/location';
 import {viewStyles, textStyles} from './styles.js';
 
 // Import types
@@ -39,13 +41,26 @@ export const HomeScreen = (): Node => {
   const records = React.useRef([]);
 
   // The actions to perform when recording ends.
-  const stopRecording = () => {
+  const stopRecording = React.useCallback(() => {
     setRecording(false);
     if (records.current && records.current.length) {
-      console.log(records.current);
+      RNFS.writeFile(
+        // Use timestamp as file name. To locate the saved file, print out
+        // RNFS.DocumentDirectoryPath to see the absolute path of the folder,
+        // and then follow the instruction:
+        // https://stackoverflow.com/a/54840183/9723036
+        RNFS.DocumentDirectoryPath +
+          '/' +
+          format(new Date(), 'MM-dd-yyyy_HH-mm-ss') +
+          '.json',
+        JSON.stringify(records.current),
+        'utf8',
+      )
+        .then(success => Toast.show('GPS recordings SAVED!'))
+        .catch(err => Alert.alert(err.code, err.message));
     }
     records.current = [];
-  };
+  }, []);
 
   // Use `useCallback` hook to ensure that `removeLocationUpdates` does not
   // change between re-rendering. This is good practice because
@@ -59,7 +74,7 @@ export const HomeScreen = (): Node => {
       setObserving(false);
       stopRecording();
     }
-  }, []);
+  }, [stopRecording]);
 
   // This is called when the home screen is unmounted. Since the app only has
   // one screen, it is the same as when the app is closed.
@@ -74,7 +89,7 @@ export const HomeScreen = (): Node => {
   // current recording session. This useEffect hook is triggered each time
   // location is updated.
   React.useEffect(() => {
-    if (recording) {
+    if (recording && location) {
       records.current.push(location);
     }
   }, [location, recording]);
