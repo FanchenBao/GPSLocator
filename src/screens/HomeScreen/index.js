@@ -8,7 +8,6 @@
 import * as React from 'react';
 import {Alert, Text, View, TouchableOpacity} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import * as RNFS from 'react-native-fs';
 import {format} from 'date-fns';
 import Toast from 'react-native-simple-toast';
 import {getLocationUpdates} from '../../functions/location';
@@ -29,20 +28,21 @@ export const HomeScreen = (): Node => {
   const stopRecording = React.useCallback(() => {
     setRecording(false);
     if (records.current && records.current.length) {
-      RNFS.writeFile(
-        // Use timestamp as file name. To locate the saved file, print out
-        // RNFS.DocumentDirectoryPath to see the absolute path of the folder,
-        // and then follow the instruction:
-        // https://stackoverflow.com/a/54840183/9723036
-        RNFS.DocumentDirectoryPath +
-          '/' +
-          format(new Date(), 'MM-dd-yyyy_HH-mm-ss') +
-          '.json',
-        JSON.stringify(records.current),
-        'utf8',
-      )
-        .then(success => Toast.show('GPS recordings SAVED!'))
-        .catch(err => Alert.alert(err.code, err.message));
+      // RNFS.writeFile(
+      //   // Use timestamp as file name. To locate the saved file, print out
+      //   // RNFS.DocumentDirectoryPath to see the absolute path of the folder,
+      //   // and then follow the instruction:
+      //   // https://stackoverflow.com/a/54840183/9723036
+      //   RNFS.DocumentDirectoryPath +
+      //     '/' +
+      //     format(new Date(), 'MM-dd-yyyy_HH-mm-ss') +
+      //     '.json',
+      //   JSON.stringify(records.current),
+      //   'utf8',
+      // )
+      //   .then(success => Toast.show('GPS recordings SAVED!'))
+      //   .catch(err => Alert.alert(err.code, err.message));
+      console.log(records.current);
     }
     records.current = [];
   }, []);

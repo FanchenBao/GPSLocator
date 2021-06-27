@@ -14,6 +14,7 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		43F83A5D374E5A7D80C34AB2 /* libPods-GPSLocator-GPSLocatorTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CDF49F63EC8ABFC40E148A5E /* libPods-GPSLocator-GPSLocatorTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		C254C496268937C10038DB61 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C254C495268937C10038DB61 /* GoogleService-Info.plist */; };
 		C2B28450268545A3000B5403 /* react-native-geolocation-service.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2B2844F268545A3000B5403 /* react-native-geolocation-service.swift */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +43,7 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = GPSLocator/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BAA69A5D25BC9CBFC222D1C2 /* libPods-GPSLocator.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GPSLocator.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDECC5D98D50790E0DE7F95A /* Pods-GPSLocator-GPSLocatorTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GPSLocator-GPSLocatorTests.release.xcconfig"; path = "Target Support Files/Pods-GPSLocator-GPSLocatorTests/Pods-GPSLocator-GPSLocatorTests.release.xcconfig"; sourceTree = "<group>"; };
+		C254C495268937C10038DB61 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "GPSLocator/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C2B2844E268545A3000B5403 /* GPSLocator-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GPSLocator-Bridging-Header.h"; sourceTree = "<group>"; };
 		C2B2844F268545A3000B5403 /* react-native-geolocation-service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "react-native-geolocation-service.swift"; sourceTree = "<group>"; };
 		CDF49F63EC8ABFC40E148A5E /* libPods-GPSLocator-GPSLocatorTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GPSLocator-GPSLocatorTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,6 +91,7 @@
 		13B07FAE1A68108700A75B9A /* GPSLocator */ = {
 			isa = PBXGroup;
 			children = (
+				C254C495268937C10038DB61 /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -249,6 +252,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				C254C496268937C10038DB61 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -503,7 +507,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.GPSLocator;
 				PRODUCT_NAME = GPSLocator;
 				SWIFT_OBJC_BRIDGING_HEADER = "GPSLocator-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -529,7 +533,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.GPSLocator;
 				PRODUCT_NAME = GPSLocator;
 				SWIFT_OBJC_BRIDGING_HEADER = "GPSLocator-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

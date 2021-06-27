@@ -4,8 +4,7 @@
  * @flow strict-local
  */
 
-import * as React from 'react';
-import {Alert, Platform} from 'react-native';
+import {Alert} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import {hasLocationPermission} from './permission.js';
 import appConfig from '../../app.json';
