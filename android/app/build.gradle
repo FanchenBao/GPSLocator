@@ -1,4 +1,7 @@
 apply plugin: "com.android.application"
+// react-native-firebase
+// See: https://rnfirebase.io/#configure-firebase-with-android-credentials
+apply plugin: 'com.google.gms.google-services'
 
 import com.android.build.OutputFile
 

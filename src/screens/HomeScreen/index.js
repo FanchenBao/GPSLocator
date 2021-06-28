@@ -1,137 +1,147 @@
-/* eslint-disable react-native/no-inline-styles */
 /**
  *
  * @format
- * @flow strict-local
+ * @flow
  */
 
 import * as React from 'react';
-import {Alert, Text, View, TouchableOpacity} from 'react-native';
-import Geolocation from 'react-native-geolocation-service';
-import {format} from 'date-fns';
-import Toast from 'react-native-simple-toast';
-import {getLocationUpdates} from '../../functions/location';
-import {viewStyles, textStyles} from './styles.js';
+import {Text, View, TextInput, TouchableOpacity, Keyboard} from 'react-native';
+import {viewStyles, textStyles} from './styles';
+import {ErrorMsg} from '../../components/ErrorMsg/index.js';
+import {HideInteraction} from '../../components/hideInteraction.js';
+import {networkStatusListener} from '../../functions/network.js';
+import auth from '@react-native-firebase/auth';
 
-// Import types
+// import types
+import type {
+  NavigationScreenProp,
+  NavigationRoute,
+} from 'react-navigation-stack';
 import type {Node} from 'react';
 
-export const HomeScreen = (): Node => {
-  const [observing, setObserving] = React.useState(false);
-  const [recording, setRecording] = React.useState(false);
-  const [location, setLocation] = React.useState(null);
+// Define types (use exact types as much as possible)
+// Type for the props acquired from the center store
+type StatePropsT = {||};
 
-  const watchId = React.useRef(null);
-  const records = React.useRef([]);
+// Type for the props passed to UserSelectScreen from its parent, if applicable
+type OwnPropsT = {|
+  navigation: NavigationScreenProp<NavigationRoute>,
+|};
 
-  // The actions to perform when recording ends.
-  const stopRecording = React.useCallback(() => {
-    setRecording(false);
-    if (records.current && records.current.length) {
-      // RNFS.writeFile(
-      //   // Use timestamp as file name. To locate the saved file, print out
-      //   // RNFS.DocumentDirectoryPath to see the absolute path of the folder,
-      //   // and then follow the instruction:
-      //   // https://stackoverflow.com/a/54840183/9723036
-      //   RNFS.DocumentDirectoryPath +
-      //     '/' +
-      //     format(new Date(), 'MM-dd-yyyy_HH-mm-ss') +
-      //     '.json',
-      //   JSON.stringify(records.current),
-      //   'utf8',
-      // )
-      //   .then(success => Toast.show('GPS recordings SAVED!'))
-      //   .catch(err => Alert.alert(err.code, err.message));
-      console.log(records.current);
+// Type for the props mapped to dispatch
+type DispatchToPropsT = {||};
+
+// Type for ALL props
+type PropsT = {|
+  ...OwnPropsT,
+  ...StatePropsT,
+  ...DispatchToPropsT,
+|};
+
+/**
+  Home screen.
+
+  The purpose of the home screen is very simple: force any user to log in. The
+  reason for log in is to that Firestore does not allow write permission unless
+  a user has been authenticated. Thus, login is necessary.
+ */
+export const HomeScreen = (props: PropsT): Node => {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [hasInternet, setHasInternet] = React.useState(true);
+
+  const onPress = async () => {
+    if (!hasInternet) {
+      return;
     }
-    records.current = [];
-  }, []);
-
-  // Use `useCallback` hook to ensure that `removeLocationUpdates` does not
-  // change between re-rendering. This is good practice because
-  // `removeLocationUpdates` is a deps for another `userEffect` hook.
-  // For best practice in `userCallback`, see this article:
-  // https://dmitripavlutin.com/dont-overuse-react-usecallback/
-  const removeLocationUpdates = React.useCallback(() => {
-    if (watchId.current !== null) {
-      Geolocation.clearWatch(watchId.current);
-      watchId.current = null;
-      setObserving(false);
-      stopRecording();
+    if (password === '' || email === '') {
+      setError('Email or password is wrong');
+      return;
     }
-  }, [stopRecording]);
+    try {
+      setError('');
+      await auth().signInWithEmailAndPassword(email, password);
+    } catch (signInError) {
+      switch (signInError.code) {
+        case 'auth/wrong-password':
+        case 'auth/user-not-found':
+          setError('Email or password is wrong');
+          break;
+        case 'auth/too-many-requests':
+          setError(
+            'Too many failed login attempts. To resetore your account, please reset your password.',
+          );
+          break;
+        default:
+          console.log(signInError);
+          setError('Internal error!');
+      }
+    }
+  };
 
-  // This is called when the home screen is unmounted. Since the app only has
-  // one screen, it is the same as when the app is closed.
+  // Hook
   React.useEffect(() => {
-    return () => {
-      removeLocationUpdates();
-    };
-  }, [removeLocationUpdates]);
-
-  // When the record button is pressed, pushing the current location to the
-  // records ref, which serves as temporary storage of all the GPS data in the
-  // current recording session. This useEffect hook is triggered each time
-  // location is updated.
-  React.useEffect(() => {
-    if (recording && location) {
-      records.current.push(location);
-    }
-  }, [location, recording]);
+    const subscriber = networkStatusListener(setHasInternet, setError, error);
+    return subscriber;
+  }, [error]);
 
   return (
-    <View style={viewStyles.container}>
-      {/* <MapView coords={location?.coords || null} /> */}
-      <View style={viewStyles.dummyContentContainer} />
-      <View style={viewStyles.contentContainer}>
-        <View style={viewStyles.buttonContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              observing
-                ? removeLocationUpdates()
-                : getLocationUpdates(
-                    setObserving,
-                    setLocation,
-                    watchId,
-                    true,
-                    true,
-                    true,
-                  );
-            }}
-            style={[
-              viewStyles.gpsButton,
-              {backgroundColor: observing ? 'red' : '#2196F3'},
-            ]}>
-            <Text style={textStyles.buttonText}>
-              {observing ? 'Stop GPS' : 'Start GPS'}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={
-              // only record if we are already observing GPS
-              () => (recording ? stopRecording() : setRecording(observing))
-            }
-            style={[
-              viewStyles.recordButton,
-              {backgroundColor: recording ? 'red' : '#40ff00'},
-            ]}>
-            <Text style={textStyles.buttonText}>
-              {recording ? 'Stop Record' : 'Start Record'}
-            </Text>
-          </TouchableOpacity>
+    <HideInteraction onPress={() => Keyboard.dismiss()}>
+      <View style={viewStyles.container}>
+        <View style={viewStyles.header}>
+          <Text style={textStyles.headerText}>GPS Locator</Text>
         </View>
-        <View style={viewStyles.resultContainer}>
-          <Text>Latitude: {location?.coords?.latitude || ''}</Text>
-          <Text>Longitude: {location?.coords?.longitude || ''}</Text>
-          <Text>Accuracy: {location?.coords?.accuracy}</Text>
-          <Text>
-            Timestamp:{' '}
-            {location?.timestamp
-              ? new Date(location.timestamp).toLocaleString()
-              : ''}
-          </Text>
+
+        <View style={viewStyles.content}>
+          <View style={viewStyles.dummyContent} />
+          <View style={viewStyles.inputTextContainer}>
+            <TextInput
+              style={textStyles.textInput}
+              autoCorrect={false}
+              placeholder="Email"
+              placeholderTextColor="lightgrey"
+              value={email}
+              onChangeText={text => {
+                setEmail(text.trim().toLowerCase());
+              }}
+              autoCapitalize="none"
+              textContentType="emailAddress"
+              keyboardType="email-address"
+            />
+          </View>
+          <View style={viewStyles.passwordContainer}>
+            <View style={viewStyles.inputTextContainer}>
+              <TextInput
+                style={textStyles.textInput}
+                autoCorrect={false}
+                placeholder="Password"
+                placeholderTextColor="lightgrey"
+                onChangeText={text => {
+                  setPassword(text);
+                }}
+                secureTextEntry={true}
+                autoCapitalize="none"
+                textContentType="password"
+              />
+            </View>
+          </View>
+          <View style={viewStyles.msgContainer}>
+            {error !== '' ? <ErrorMsg msg={error} /> : null}
+          </View>
+        </View>
+
+        <View style={viewStyles.interaction}>
+          <View style={viewStyles.loginButtonContainer}>
+            <TouchableOpacity
+              style={viewStyles.loginButton}
+              onPress={() => onPress()}>
+              <Text style={textStyles.loginButtonText}>Log In</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={viewStyles.dummyInteraction} />
         </View>
       </View>
-    </View>
+    </HideInteraction>
   );
 };

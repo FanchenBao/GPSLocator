@@ -1,7 +1,7 @@
 /**
  *
  * @format
- * @flow strict-local
+ * @flow
  */
 import {
   Alert,

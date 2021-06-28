@@ -1,4 +1,7 @@
 #import "AppDelegate.h"
+// react-native-firebase
+// See: https://rnfirebase.io/#configure-firebase-with-ios-credentials
+#import <Firebase.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -27,6 +30,11 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  // react-native-firebase
+  // See: https://rnfirebase.io/#configure-firebase-with-ios-credentials
+  if ([FIRApp defaultApp] == nil) {
+    [FIRApp configure];
+  }
 #ifdef FB_SONARKIT_ENABLED
   InitializeFlipper(application);
 #endif

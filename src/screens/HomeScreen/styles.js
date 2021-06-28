@@ -1,7 +1,5 @@
 /**
- *
- * @format
- * @flow strict-local
+ * @flow
  */
 
 import {StyleSheet} from 'react-native';
@@ -15,50 +13,114 @@ import type {
 export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    backgroundColor: 'white',
+    // borderWidth: 2
+    // borderColor: 'blue',
   },
-  dummyContentContainer: {
-    flex: 3.5,
-  },
-  contentContainer: {
-    flex: 1,
+  header: {
+    flex: 0.8,
     justifyContent: 'flex-end',
     alignItems: 'center',
     // borderWidth: 2,
+    // borderColor: 'green',
+  },
+  logo: {
+    width: 167.74,
+    height: 38.57,
+  },
+
+  content: {
+    flex: 1,
+    alignSelf: 'stretch',
+    // borderWidth: 2,
+    // borderColor: 'purple',
+  },
+  dummyContent: {
+    flex: 1.5,
+  },
+  inputTextContainer: {
+    flex: 1,
+    borderBottomColor: 'black',
+    borderBottomWidth: 2,
+    justifyContent: 'flex-end',
+    // borderWidth: 2,
     // borderColor: 'blue',
   },
-  buttonContainer: {
-    flex: 1,
+
+  passwordContainer: {
+    flex: 1.2,
     flexDirection: 'row',
-    alignSelf: 'stretch',
-    justifyContent: 'space-around',
     // borderWidth: 2,
-    // borderColor: 'red',
+    // borderColor: 'green',
   },
-  gpsButton: {
-    justifyContent: 'center',
+  eyeContainer: {
+    justifyContent: 'flex-end',
+    borderBottomColor: 'black',
+    borderBottomWidth: 2,
+  },
+  eye: {
+    paddingBottom: 7,
+  },
+  msgContainer: {
+    flex: 1.5,
+    paddingVertical: 10,
+    // borderWidth: 2,
+    // borderColor: 'blue',
+  },
+
+  interaction: {
+    flex: 1.2,
+    alignSelf: 'stretch',
+    // borderWidth: 2,
+    // borderColor: 'cyan',
+  },
+  loginButtonContainer: {
+    flex: 1,
     alignItems: 'center',
-    width: 150,
-    borderRadius: 15,
-  },
-  recordButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 150,
-    borderRadius: 15,
-  },
-  resultContainer: {
-    flex: 2,
-    justifyContent: 'center',
-    width: '70%',
-    padding: 10,
+    justifyContent: 'flex-start',
     // borderWidth: 2,
     // borderColor: 'black',
+  },
+  loginButton: {
+    height: 40,
+    backgroundColor: '#2196F3',
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'stretch',
+  },
+
+  interactionTextContainerContainer: {
+    flex: 1,
+  },
+  interactionTextContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    // borderWidth: 2,
+    // borderColor: 'grey',
+  },
+  dummyInteraction: {
+    flex: 1.5,
   },
 });
 
 export const textStyles: {[string]: TextStyleProp} = StyleSheet.create({
-  buttonText: {
+  headerText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#2196F3',
+  },
+  textInput: {
+    paddingBottom: 10,
+    fontFamily: 'Montserrat-Medium',
+    color: 'black',
+    fontSize: 16,
+  },
+  loginButtonText: {
+    color: 'black',
     fontSize: 20,
-    color: 'white',
   },
 });

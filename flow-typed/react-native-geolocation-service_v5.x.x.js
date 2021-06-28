@@ -1,7 +1,7 @@
 /**
  *
  * @format
- * @flow strict-local
+ * @flow
  *
  * This is a custom-modified flow type stub, obtained from here:
  * https://github.com/Agontuk/react-native-geolocation-service/blob/master/index.d.ts
