@@ -6,15 +6,14 @@
  */
 
 import * as React from 'react';
-import {Alert, Text, View, TouchableOpacity} from 'react-native';
+import {Text, View, TouchableOpacity, SafeAreaView} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import NetInfo from '@react-native-community/netinfo';
-import {format} from 'date-fns';
 import Toast from 'react-native-simple-toast';
-import {getLocationUpdates} from '../../functions/location';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+import {getLocationUpdates, getLocation} from '../../functions/location';
 import {networkStatusListener} from '../../functions/network.js';
+import {uploadGPS} from '../../functions/database.js';
 import {viewStyles, textStyles} from './styles.js';
 import {ErrorMsg} from '../../components/ErrorMsg/index.js';
 
@@ -49,6 +48,7 @@ export const GPSScreen = (props: PropsT): Node => {
   const [observing, setObserving] = React.useState(false);
   const [recording, setRecording] = React.useState(false);
   const [location, setLocation] = React.useState(null);
+  const [initLocation, setInitLocation] = React.useState(null);
   const [error, setError] = React.useState('');
   const [hasInternet, setHasInternet] = React.useState(true);
 
@@ -59,15 +59,14 @@ export const GPSScreen = (props: PropsT): Node => {
   const stopRecording = React.useCallback(() => {
     setRecording(false);
     if (records.current && records.current.length) {
-      firestore()
-        .collection('data')
-        .doc(format(new Date(), 'MM-dd-yyyy_HH-mm-ss'))
-        .set({gps: records.current})
-        .then(() => Toast.show('GPS recordings SAVED!'))
-        .catch(err => {
+      uploadGPS(
+        records.current,
+        () => Toast.show('GPS recordings SAVED!'),
+        err => {
           console.log(err);
           setError('Save GPS recordings FAILED. Cannot upload data!');
-        });
+        },
+      );
     }
     records.current = [];
   }, []);
@@ -104,6 +103,9 @@ export const GPSScreen = (props: PropsT): Node => {
     }
   }, [location, recording]);
 
+  // Internet connection check. If internet is lost, display error message and
+  // discard all recorded GPS data. This essentially forces a redo of the
+  // previous data collection.
   React.useEffect(() => {
     const subscriber = networkStatusListener(
       setHasInternet,
@@ -116,6 +118,11 @@ export const GPSScreen = (props: PropsT): Node => {
     );
     return subscriber;
   }, [error]);
+
+  // Obtain initial geolocation for Google Maps, and do this only once.
+  React.useEffect(() => {
+    getLocation(setInitLocation, true, true, true);
+  }, []);
 
   // Add log out button on the header
   React.useLayoutEffect(() => {
@@ -136,12 +143,42 @@ export const GPSScreen = (props: PropsT): Node => {
 
   return (
     <View style={viewStyles.container}>
-      {/* <MapView coords={location?.coords || null} /> */}
-      <View style={viewStyles.dummyContentContainer} />
+      {initLocation && (
+        <MapView
+          // We do not specify provider because for iOS, we cannot use Google
+          // maps due to us having a swift file in the iOS project. Recall that
+          // the swift file is added for react-native-geolocation-service. It
+          // has been documented that when the iOS project is a mixture of
+          // objective C and swift, we cannot use Google-Maps-iOS-Utils directly
+          // see: https://github.com/googlemaps/google-maps-ios-utils/blob/b721e95a500d0c9a4fd93738e83fc86c2a57ac89/Swift.md
+          // Given that we do not need extensive features in maps, we can live
+          // with using Apple maps.
+          provider={PROVIDER_GOOGLE}
+          style={viewStyles.map}
+          initialRegion={{
+            latitude: initLocation.coords.latitude,
+            longitude: initLocation.coords.longitude,
+            latitudeDelta: 0.001,
+            longitudeDelta: 0.001,
+          }}
+          moveOnMarkerPress={false}>
+          {location && (
+            <Marker
+              coordinate={{
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              }}
+              tracksViewChanges={false}>
+              <View style={viewStyles.circle} />
+            </Marker>
+          )}
+        </MapView>
+      )}
+      {/* <View style={viewStyles.dummyContentContainer} /> */}
+      <View style={viewStyles.msgContainer}>
+        {error !== '' ? <ErrorMsg msg={error} /> : null}
+      </View>
       <View style={viewStyles.contentContainer}>
-        <View style={viewStyles.msgContainer}>
-          {error !== '' ? <ErrorMsg msg={error} /> : null}
-        </View>
         <View style={viewStyles.buttonContainer}>
           <TouchableOpacity
             onPress={() => {

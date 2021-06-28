@@ -15,22 +15,27 @@ import type {
 export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
   container: {
     flex: 1,
+    // alignItems: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
-  dummyContentContainer: {
-    flex: 3,
+  map: {
+    ...StyleSheet.absoluteFillObject,
   },
   contentContainer: {
-    flex: 1.5,
-    justifyContent: 'flex-end',
+    height: '23%',
     alignItems: 'center',
+    alignSelf: 'stretch',
+    paddingVertical: 10,
+    backgroundColor: 'white',
     // borderWidth: 2,
     // borderColor: 'blue',
   },
   msgContainer: {
-    flex: 1,
-    paddingVertical: 10,
+    height: '8%',
+    paddingVertical: 5,
     // borderWidth: 2,
-    // borderColor: 'blue',
+    // borderColor: 'red',
   },
   buttonContainer: {
     flex: 1,
@@ -43,19 +48,20 @@ export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
   gpsButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 150,
+    width: 120,
     borderRadius: 15,
   },
   recordButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 150,
+    width: 120,
     borderRadius: 15,
   },
   resultContainer: {
     flex: 2,
     justifyContent: 'center',
-    width: '70%',
+    alignItems: 'center',
+    alignSelf: 'stretch',
     padding: 10,
     // borderWidth: 2,
     // borderColor: 'black',
@@ -66,11 +72,19 @@ export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
     borderRadius: 10,
     marginRight: 10,
   },
+  circle: {
+    width: 15,
+    height: 15,
+    borderRadius: 15 / 2,
+    backgroundColor: '#2196F3',
+    borderWidth: 2,
+    borderColor: 'blue',
+  },
 });
 
 export const textStyles: {[string]: TextStyleProp} = StyleSheet.create({
   buttonText: {
-    fontSize: 20,
+    fontSize: 18,
     color: 'white',
   },
   link: {

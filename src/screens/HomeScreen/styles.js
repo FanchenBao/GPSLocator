@@ -11,6 +11,9 @@ import type {
 } from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
+  safeAreaContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -115,7 +118,6 @@ export const textStyles: {[string]: TextStyleProp} = StyleSheet.create({
   },
   textInput: {
     paddingBottom: 10,
-    fontFamily: 'Montserrat-Medium',
     color: 'black',
     fontSize: 16,
   },

@@ -27,5 +27,12 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
       </activity>
+
+      <!-- react-native-map -->
+      <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+      <!-- react-native-map -->
+      <meta-data
+        android:name="com.google.android.geo.API_KEY"
+        android:value="${GOOGLE_MAP_API_KEY}"/>
     </application>
 </manifest>
