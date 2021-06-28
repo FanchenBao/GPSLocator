@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react';
-import {Text, View, TouchableOpacity, SafeAreaView} from 'react-native';
+import {Text, View, TouchableOpacity} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-simple-toast';

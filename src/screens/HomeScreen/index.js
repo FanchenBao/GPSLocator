@@ -5,14 +5,7 @@
  */
 
 import * as React from 'react';
-import {
-  Text,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Keyboard,
-  SafeAreaView,
-} from 'react-native';
+import {Text, View, TextInput, TouchableOpacity, Keyboard} from 'react-native';
 import {viewStyles, textStyles} from './styles';
 import {ErrorMsg} from '../../components/ErrorMsg/index.js';
 import {HideInteraction} from '../../components/hideInteraction.js';
@@ -94,63 +87,61 @@ export const HomeScreen = (props: PropsT): Node => {
   }, [error]);
 
   return (
-    <SafeAreaView style={viewStyles.safeAreaContainer}>
-      <HideInteraction onPress={() => Keyboard.dismiss()}>
-        <View style={viewStyles.container}>
-          <View style={viewStyles.header}>
-            <Text style={textStyles.headerText}>GPS Locator</Text>
-          </View>
+    <HideInteraction onPress={() => Keyboard.dismiss()}>
+      <View style={viewStyles.container}>
+        <View style={viewStyles.header}>
+          <Text style={textStyles.headerText}>GPS Locator</Text>
+        </View>
 
-          <View style={viewStyles.content}>
-            <View style={viewStyles.dummyContent} />
+        <View style={viewStyles.content}>
+          <View style={viewStyles.dummyContent} />
+          <View style={viewStyles.inputTextContainer}>
+            <TextInput
+              style={textStyles.textInput}
+              autoCorrect={false}
+              placeholder="Email"
+              placeholderTextColor="lightgrey"
+              value={email}
+              onChangeText={text => {
+                setEmail(text.trim().toLowerCase());
+              }}
+              autoCapitalize="none"
+              textContentType="emailAddress"
+              keyboardType="email-address"
+            />
+          </View>
+          <View style={viewStyles.passwordContainer}>
             <View style={viewStyles.inputTextContainer}>
               <TextInput
                 style={textStyles.textInput}
                 autoCorrect={false}
-                placeholder="Email"
+                placeholder="Password"
                 placeholderTextColor="lightgrey"
-                value={email}
                 onChangeText={text => {
-                  setEmail(text.trim().toLowerCase());
+                  setPassword(text);
                 }}
+                secureTextEntry={true}
                 autoCapitalize="none"
-                textContentType="emailAddress"
-                keyboardType="email-address"
+                textContentType="password"
               />
             </View>
-            <View style={viewStyles.passwordContainer}>
-              <View style={viewStyles.inputTextContainer}>
-                <TextInput
-                  style={textStyles.textInput}
-                  autoCorrect={false}
-                  placeholder="Password"
-                  placeholderTextColor="lightgrey"
-                  onChangeText={text => {
-                    setPassword(text);
-                  }}
-                  secureTextEntry={true}
-                  autoCapitalize="none"
-                  textContentType="password"
-                />
-              </View>
-            </View>
-            <View style={viewStyles.msgContainer}>
-              {error !== '' ? <ErrorMsg msg={error} /> : null}
-            </View>
           </View>
-
-          <View style={viewStyles.interaction}>
-            <View style={viewStyles.loginButtonContainer}>
-              <TouchableOpacity
-                style={viewStyles.loginButton}
-                onPress={() => onPress()}>
-                <Text style={textStyles.loginButtonText}>Log In</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={viewStyles.dummyInteraction} />
+          <View style={viewStyles.msgContainer}>
+            {error !== '' ? <ErrorMsg msg={error} /> : null}
           </View>
         </View>
-      </HideInteraction>
-    </SafeAreaView>
+
+        <View style={viewStyles.interaction}>
+          <View style={viewStyles.loginButtonContainer}>
+            <TouchableOpacity
+              style={viewStyles.loginButton}
+              onPress={() => onPress()}>
+              <Text style={textStyles.loginButtonText}>Log In</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={viewStyles.dummyInteraction} />
+        </View>
+      </View>
+    </HideInteraction>
   );
 };

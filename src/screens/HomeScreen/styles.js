@@ -11,9 +11,6 @@ import type {
 } from 'react-native/Libraries/StyleSheet/StyleSheet';
 
 export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
-  safeAreaContainer: {
-    flex: 1,
-  },
   container: {
     flex: 1,
     alignItems: 'center',

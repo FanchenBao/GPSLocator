@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
@@ -7,6 +8,7 @@
  */
 
 import React from 'react';
+import {SafeAreaView} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {HomeScreen} from './src/screens/HomeScreen/index.js';
@@ -36,23 +38,25 @@ const App: () => Node = () => {
     return subscriber; // unsubscribe on unmount
   });
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {user ? ( // Follow best practice: https://reactnavigation.org/docs/auth-flow
-          <>
-            <Stack.Screen
-              name="GPS"
-              options={{gestureEnabled: false}}
-              component={GPSScreen}
-            />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="Log In" component={HomeScreen} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaView style={{flex: 1}}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {user ? ( // Follow best practice: https://reactnavigation.org/docs/auth-flow
+            <>
+              <Stack.Screen
+                name="GPS"
+                options={{gestureEnabled: false}}
+                component={GPSScreen}
+              />
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="Log In" component={HomeScreen} />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaView>
   );
 };
 
