@@ -155,6 +155,7 @@ export const GPSScreen = (props: PropsT): Node => {
           // with using Apple maps.
           provider={PROVIDER_GOOGLE}
           style={viewStyles.map}
+          mapType="satellite"
           initialRegion={{
             latitude: initLocation.coords.latitude,
             longitude: initLocation.coords.longitude,
@@ -174,7 +175,6 @@ export const GPSScreen = (props: PropsT): Node => {
           )}
         </MapView>
       )}
-      {/* <View style={viewStyles.dummyContentContainer} /> */}
       <View style={viewStyles.msgContainer}>
         {error !== '' ? <ErrorMsg msg={error} /> : null}
       </View>

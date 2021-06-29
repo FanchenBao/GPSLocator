@@ -1,4 +1,11 @@
 apply plugin: "com.android.application"
+// react-native-config
+// See example: https://github.com/luggit/react-native-config/blob/master/Example/android/app/build.gradle
+project.ext.envConfigFiles = [
+    debug: ".env",
+    release: ".env",
+]
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
 // react-native-firebase
 // See: https://rnfirebase.io/#configure-firebase-with-android-credentials
 apply plugin: 'com.google.gms.google-services'
@@ -139,7 +146,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-        manifestPlaceholders = [GOOGLE_MAP_API_KEY: "$System.env.GOOGLE_MAP_API_KEY"]
+        manifestPlaceholders = [GOOGLE_MAP_API_KEY: project.env.get("GOOGLE_MAP_API_KEY")] 
     }
     splits {
         abi {

@@ -5,6 +5,8 @@
 // react-native-maps
 // See: https://github.com/react-native-maps/react-native-maps/blob/master/docs/installation.md#enabling-google-maps
 #import <GoogleMaps/GoogleMaps.h>
+// react-native-config
+#import "ReactNativeConfig.h"
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -46,8 +48,8 @@ static void InitializeFlipper(UIApplication *application) {
   // https://github.com/react-native-maps/react-native-maps/blob/master/docs/installation.md#enabling-google-maps
   // Note the slight difference from documentation because we are reading the
   // Google Map API key from environment.
-  // NSString *mapsApiKey = [[[NSProcessInfo processInfo]environment]objectForKey:@"GOOGLE_MAP_API_KEY"];
-  [GMSServices provideAPIKey:@"AIzaSyAV13VIqaDitciRhtD-F13OJF6uAhaMHmE"]; // add this line using the api key obtained from Google Console
+  NSString *mapsApiKey = [ReactNativeConfig envFor:@"GOOGLE_MAP_API_KEY"];
+  [GMSServices provideAPIKey:mapsApiKey]; // add this line using the api key obtained from Google Console
 
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
