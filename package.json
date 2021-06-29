@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "android": "npx react-native run-android",
+    "android:beta": "bundle exec fastlane android beta",
     "ios": "npx react-native run-ios",
     "start": "npx react-native start",
     "test": "jest",

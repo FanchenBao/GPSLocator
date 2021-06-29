@@ -1,0 +1,49 @@
+platform :android do
+  before_all do
+    ensure_git_status_clean
+  end
+
+	###########
+  # RECIPES #
+  ###########
+  desc 'Release build'
+  lane :release_build do
+    Dir.chdir('..') do
+      # place info of release-upload keystore in android/gradle.properties.
+      # Apparently, gradlew no longer picks up the variables from .gradle/gradle.properties
+      # But since we already hide the info of release-upload keystore, we will
+      # simply copy the content and later delete them.
+      # See here: https://stackoverflow.com/a/61211003/9723036
+      sh('cat android/.gradle/gradle.properties >> android/gradle.properties')
+    end
+    android_set_version_code(
+      gradle_file: "./android/app/build.gradle"
+    )
+    gradle(task: 'clean', project_dir: 'android/')
+    gradle(task: 'assemble', build_type: 'Release', project_dir: 'android/')
+    Dir.chdir('..') do
+      sh('ghead -n -4 android/gradle.properties > foo && mv foo android/gradle.properties')  # revert android/gradle.properties
+    end
+  end
+
+  desc 'Development build'
+  lane :dev_build do
+    ENV['BABEL_ENV'] = 'development'
+    gradle(task: 'clean', project_dir: 'android/')
+    gradle(task: 'assemble', build_type: 'Debug', project_dir: 'android/')
+  end
+
+  ################ 
+  # BETA RELEASE #
+  ################
+  desc 'Build and upload to App Center.'
+  lane :beta do
+    release_build
+    appcenter_upload(
+      api_token: ENV["APPCENTER_API_TOKEN_ANDROID"],
+      owner_name: ENV["APPCENTER_OWNER_NAME"],
+      app_name: ENV["APPCENTER_APP_NAME_ANDROID"],
+      file: ENV["APPCENTER_DISTRIBUTE_APK"]
+    )
+  end
+end
