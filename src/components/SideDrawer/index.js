@@ -20,11 +20,11 @@ type StatePropsT = {||};
 // Type for the props passed from its parent, if applicable
 type OwnPropsT = {|
   children?: Node,
-  expandable: boolean,
   peekWidthPct: number, // width of the peek state as percentage of total width
   openWidthPct: number, // width of the open state as percentage of total width
   maxWidthPct: number, // maximum pct of width allowed for a user to drag the drawer.
-  nonSlideOpen: boolean, // a flag indicating whether the drawer should open without user sliding
+  expandable?: boolean, // whether the drawer is expandable. If set to false, the drawer cannot expand beyond the peek state
+  nonSlideOpen?: boolean, // a flag indicating whether the drawer should open without user sliding. Useful when the drawer needs to be opened programmatically. Default to false.
   onDrawerOpen?: () => void, // callback when the drawer is in open state.
   onDrawerPeek?: () => void, // callback when the drawer is in peek state.
 |};
@@ -46,16 +46,22 @@ const HorizontalLine = () => <View style={styles.horizontalLine} />;
 	Inspired by: https://dev.to/johannawad/creating-a-swipe-up-bottom-drawer-in-react-native-no-external-libraries-3ng1
  */
 export const SideDrawer = (props: PropsT): Node => {
-  const {
-    children,
-    expandable,
-    peekWidthPct,
-    openWidthPct,
-    maxWidthPct,
-    nonSlideOpen,
-    onDrawerOpen,
-    onDrawerPeek,
-  } = props;
+  const {children, peekWidthPct, openWidthPct, maxWidthPct} = props;
+  // Specify default prop values
+  const expandable = props.expandable === undefined ? true : props.expandable;
+  const nonSlideOpen =
+    props.nonSlideOpen === undefined ? false : props.nonSlideOpen;
+  const onDrawerOpen = React.useCallback(() => {
+    if (props.onDrawerOpen) {
+      props.onDrawerOpen();
+    }
+  }, [props]);
+  const onDrawerPeek = React.useCallback(() => {
+    if (props.onDrawerPeek) {
+      props.onDrawerPeek();
+    }
+  }, [props]);
+
   const {width} = Dimensions.get('window');
   // State is the width of the drawer
   const DrawerState = React.useMemo(
@@ -131,13 +137,13 @@ export const SideDrawer = (props: PropsT): Node => {
     }
   }, [state, DrawerState, animate, getNextDeltaX, nonSlideOpen]);
 
-  // on drawer open or peek
+  // on drawer open or peek callback
   React.useEffect(() => {
     if (state._value === DrawerState.Open) {
-      onDrawerOpen && onDrawerOpen();
+      onDrawerOpen();
     }
     if (state._value === DrawerState.Peek) {
-      onDrawerPeek && onDrawerPeek();
+      onDrawerPeek();
     }
   }, [state, DrawerState, onDrawerOpen, onDrawerPeek]);
 

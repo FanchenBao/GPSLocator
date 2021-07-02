@@ -283,7 +283,6 @@ export const GPSScreen = (props: PropsT): Node => {
         </View>
       </View>
       <SideDrawer
-        expandable={true}
         openWidthPct={0.75}
         peekWidthPct={0}
         maxWidthPct={0.8}
