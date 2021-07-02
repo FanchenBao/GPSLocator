@@ -81,6 +81,19 @@ export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'blue',
   },
+  userLogoContainer: {
+    // position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 'auto', // magic use of margin: auto, see this https://hackernoon.com/flexbox-s-best-kept-secret-bd3d892826b6
+    marginLeft: 'auto',
+    marginTop: 20,
+    marginRight: 20,
+    backgroundColor: 'white',
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+  },
 });
 
 export const textStyles: {[string]: TextStyleProp} = StyleSheet.create({

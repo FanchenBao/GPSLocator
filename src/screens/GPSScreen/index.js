@@ -16,6 +16,8 @@ import {networkStatusListener} from '../../functions/network.js';
 import {uploadGPS} from '../../functions/database.js';
 import {viewStyles, textStyles} from './styles.js';
 import {ErrorMsg} from '../../components/ErrorMsg/index.js';
+import {SideDrawer} from '../../components/SideDrawer/index.js';
+import UserLogo from '../../assets/user.svg';
 
 // Import types
 import type {
@@ -70,6 +72,10 @@ export const GPSScreen = (props: PropsT): Node => {
     records.current = [];
   }, []);
 
+  // Check whether the current GPS location is within the boundary of the
+  // screen. This makes use of the latitudeDelta and longitudeDelta. For a
+  // detailed explanation of this delta concept, refer to this SO answer:
+  // https://stackoverflow.com/a/36688156/9723036
   const locationInMapView = React.useCallback(() => {
     return (
       location &&
@@ -141,8 +147,8 @@ export const GPSScreen = (props: PropsT): Node => {
           setRegion({
             latitude: loc.coords.latitude,
             longitude: loc.coords.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
+            latitudeDelta: 0.001,
+            longitudeDelta: 0.001,
           });
         }
       },
@@ -211,6 +217,9 @@ export const GPSScreen = (props: PropsT): Node => {
           )}
         </MapView>
       )}
+      <View style={viewStyles.userLogoContainer}>
+        <UserLogo width={30} height={30} />
+      </View>
       <View style={viewStyles.msgContainer}>
         {error !== '' ? <ErrorMsg msg={error} /> : null}
       </View>
@@ -270,6 +279,13 @@ export const GPSScreen = (props: PropsT): Node => {
           </Text>
         </View>
       </View>
+      <SideDrawer
+        expandable={true}
+        openWidthPct={0.75}
+        peekWidthPct={0}
+        maxWidthPct={0.8}>
+        <Text>Hello World</Text>
+      </SideDrawer>
     </View>
   );
 };
