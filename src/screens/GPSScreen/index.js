@@ -46,31 +46,45 @@ type PropsT = {|
 export const GPSScreen = (props: PropsT): Node => {
   const {navigation} = props;
   const [observing, setObserving] = React.useState(false);
-  const [recording, setRecording] = React.useState(false);
-  const [location, setLocation] = React.useState(null);
-  const [initLocation, setInitLocation] = React.useState(null);
+  const [recording, setRecording] = React.useState(false); // record all GPS data in one session
+  const [location, setLocation] = React.useState(null); // record current GPS data
+  const [region, setRegion] = React.useState(null); // record current map view region
   const [error, setError] = React.useState('');
   const [hasInternet, setHasInternet] = React.useState(true);
 
   const watchId = React.useRef(null);
   const records = React.useRef([]);
+  const mapRef = React.useRef(null);
 
   // The actions to perform when recording ends.
   const stopRecording = React.useCallback(() => {
     setRecording(false);
     if (records.current && records.current.length) {
-      uploadGPS(
-        records.current,
-        () => Toast.show('GPS recordings SAVED!'),
-        err => {
+      uploadGPS(records.current)
+        .then(() => Toast.show('GPS recordings SAVED!'))
+        .catch(err => {
           console.log(err);
           setError('Save GPS recordings FAILED. Cannot upload data!');
-        },
-      );
+        });
     }
     records.current = [];
   }, []);
 
+  const locationInMapView = React.useCallback(() => {
+    return (
+      location &&
+      region &&
+      location.coords.latitude >= region.latitude - region.latitudeDelta / 2 &&
+      location.coords.latitude <= region.latitude + region.latitudeDelta / 2 &&
+      location.coords.longitude >=
+        region.longitude - region.longitudeDelta / 2 &&
+      location.coords.longitude <= region.longitude + region.longitudeDelta / 2
+    );
+  }, [region, location]);
+
+  /////////////////
+  // React Hooks //
+  /////////////////
   // Use `useCallback` hook to ensure that `removeLocationUpdates` does not
   // change between re-rendering. This is good practice because
   // `removeLocationUpdates` is a deps for another `userEffect` hook.
@@ -121,8 +135,41 @@ export const GPSScreen = (props: PropsT): Node => {
 
   // Obtain initial geolocation for Google Maps, and do this only once.
   React.useEffect(() => {
-    getLocation(setInitLocation, true, true, true);
+    getLocation(
+      loc => {
+        if (loc) {
+          setRegion({
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          });
+        }
+      },
+      true,
+      true,
+      true,
+    );
   }, []);
+
+  // Automatically switch map view if the current location is out of the bound
+  // of the screen. NOTE: we are using mapRef.current.animateToRegion to
+  // manually change region. This is a recommended behavior from this post:
+  // https://github.com/react-native-maps/react-native-maps/issues/3639#issuecomment-737045732
+  // Using the `region` prop within MapView and `onRegionChangeComplete` or
+  // `onRegionChange` results in unwanted map moves that I cannot explain.
+  React.useEffect(() => {
+    if (location && region && !locationInMapView()) {
+      if (mapRef.current) {
+        mapRef.current.animateToRegion({
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: region.latitudeDelta,
+          longitudeDelta: region.longitudeDelta,
+        });
+      }
+    }
+  }, [location, region, mapRef, locationInMapView]);
 
   // Add log out button on the header
   React.useLayoutEffect(() => {
@@ -143,26 +190,15 @@ export const GPSScreen = (props: PropsT): Node => {
 
   return (
     <View style={viewStyles.container}>
-      {initLocation && (
+      {region && (
         <MapView
-          // We do not specify provider because for iOS, we cannot use Google
-          // maps due to us having a swift file in the iOS project. Recall that
-          // the swift file is added for react-native-geolocation-service. It
-          // has been documented that when the iOS project is a mixture of
-          // objective C and swift, we cannot use Google-Maps-iOS-Utils directly
-          // see: https://github.com/googlemaps/google-maps-ios-utils/blob/b721e95a500d0c9a4fd93738e83fc86c2a57ac89/Swift.md
-          // Given that we do not need extensive features in maps, we can live
-          // with using Apple maps.
+          ref={mapRef}
           provider={PROVIDER_GOOGLE}
           style={viewStyles.map}
           mapType="satellite"
-          initialRegion={{
-            latitude: initLocation.coords.latitude,
-            longitude: initLocation.coords.longitude,
-            latitudeDelta: 0.001,
-            longitudeDelta: 0.001,
-          }}
-          moveOnMarkerPress={false}>
+          initialRegion={region}
+          moveOnMarkerPress={false}
+          onRegionChangeComplete={region_ => setRegion(region_)}>
           {location && (
             <Marker
               coordinate={{

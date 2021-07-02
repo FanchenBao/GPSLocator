@@ -144,7 +144,7 @@ android {
         applicationId "com.gpslocator"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
+        versionCode 3
         versionName "0.1.0"
         manifestPlaceholders = [GOOGLE_MAP_API_KEY: project.env.get("GOOGLE_MAP_API_KEY")] 
     }

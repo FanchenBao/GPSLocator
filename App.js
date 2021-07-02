@@ -40,7 +40,10 @@ const App: () => Node = () => {
   return (
     <SafeAreaView style={{flex: 1}}>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}>
           {user ? ( // Follow best practice: https://reactnavigation.org/docs/auth-flow
             <>
               <Stack.Screen

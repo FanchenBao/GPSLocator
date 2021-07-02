@@ -21,6 +21,7 @@ export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+    height: '77%',
   },
   contentContainer: {
     height: '23%',
