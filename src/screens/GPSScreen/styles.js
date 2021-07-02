@@ -81,7 +81,7 @@ export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'blue',
   },
-  userLogoContainer: {
+  userLogoButton: {
     // position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',

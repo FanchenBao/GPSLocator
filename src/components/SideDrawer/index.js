@@ -7,7 +7,7 @@
  */
 
 import * as React from 'react';
-import {Animated, View, Dimensions, PanResponder, Platform} from 'react-native';
+import {Animated, View, Dimensions, PanResponder} from 'react-native';
 import {styles} from './styles.js';
 
 // Import types
@@ -24,6 +24,9 @@ type OwnPropsT = {|
   peekWidthPct: number, // width of the peek state as percentage of total width
   openWidthPct: number, // width of the open state as percentage of total width
   maxWidthPct: number, // maximum pct of width allowed for a user to drag the drawer.
+  nonSlideOpen: boolean, // a flag indicating whether the drawer should open without user sliding
+  onDrawerOpen?: () => void, // callback when the drawer is in open state.
+  onDrawerPeek?: () => void, // callback when the drawer is in peek state.
 |};
 
 // Type for the props mapped to dispatch
@@ -43,13 +46,25 @@ const HorizontalLine = () => <View style={styles.horizontalLine} />;
 	Inspired by: https://dev.to/johannawad/creating-a-swipe-up-bottom-drawer-in-react-native-no-external-libraries-3ng1
  */
 export const SideDrawer = (props: PropsT): Node => {
-  const {children, expandable, peekWidthPct, openWidthPct, maxWidthPct} = props;
+  const {
+    children,
+    expandable,
+    peekWidthPct,
+    openWidthPct,
+    maxWidthPct,
+    nonSlideOpen,
+    onDrawerOpen,
+    onDrawerPeek,
+  } = props;
   const {width} = Dimensions.get('window');
   // State is the width of the drawer
-  const DrawerState = {
-    Open: width * openWidthPct,
-    Peek: width * peekWidthPct,
-  };
+  const DrawerState = React.useMemo(
+    () => ({
+      Open: width * openWidthPct,
+      Peek: width * peekWidthPct,
+    }),
+    [openWidthPct, peekWidthPct, width],
+  );
   const deltaX = React.useRef(new Animated.Value(0)).current;
   const state = React.useRef(new Animated.Value(DrawerState.Peek)).current;
   const delta = 10; // change SideDrawer state if finger slides is larger than this value
@@ -65,24 +80,30 @@ export const SideDrawer = (props: PropsT): Node => {
     }
   };
 
-  const getNextDeltaX = (nextState: number): number => {
-    switch (nextState) {
-      case DrawerState.Open:
-        return DrawerState.Peek - DrawerState.Open; // negative value, going up
-      case DrawerState.Peek:
-        return 0; // We start at peek. If end at peek as well, no move
-      default:
-        return 0;
-    }
-  };
+  const getNextDeltaX = React.useCallback(
+    (nextState: number): number => {
+      switch (nextState) {
+        case DrawerState.Open:
+          return DrawerState.Peek - DrawerState.Open; // negative value, going up
+        case DrawerState.Peek:
+          return 0; // We start at peek. If end at peek as well, no move
+        default:
+          return 0;
+      }
+    },
+    [DrawerState],
+  );
 
-  const animate = (nextDeltaX: number) => {
-    Animated.spring(deltaX, {
-      toValue: nextDeltaX,
-      speed: 40,
-      useNativeDriver: false,
-    }).start();
-  };
+  const animate = React.useCallback(
+    (nextDeltaX: number) => {
+      Animated.spring(deltaX, {
+        toValue: nextDeltaX,
+        speed: 40,
+        useNativeDriver: false,
+      }).start();
+    },
+    [deltaX],
+  );
 
   const panResponder = React.useRef(
     PanResponder.create({
@@ -101,6 +122,24 @@ export const SideDrawer = (props: PropsT): Node => {
       },
     }),
   ).current;
+
+  // Perform non-slide open of the drawer
+  React.useEffect(() => {
+    if (state._value === DrawerState.Peek && nonSlideOpen) {
+      state.setValue(DrawerState.Open);
+      animate(getNextDeltaX(DrawerState.Open));
+    }
+  }, [state, DrawerState, animate, getNextDeltaX, nonSlideOpen]);
+
+  // on drawer open or peek
+  React.useEffect(() => {
+    if (state._value === DrawerState.Open) {
+      onDrawerOpen && onDrawerOpen();
+    }
+    if (state._value === DrawerState.Peek) {
+      onDrawerPeek && onDrawerPeek();
+    }
+  }, [state, DrawerState, onDrawerOpen, onDrawerPeek]);
 
   return (
     <Animated.View

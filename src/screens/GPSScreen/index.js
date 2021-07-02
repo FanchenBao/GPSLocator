@@ -53,6 +53,7 @@ export const GPSScreen = (props: PropsT): Node => {
   const [region, setRegion] = React.useState(null); // record current map view region
   const [error, setError] = React.useState('');
   const [hasInternet, setHasInternet] = React.useState(true);
+  const [openPref, setOpenPref] = React.useState(false); // Flag to indicate the opening of user prefernce
 
   const watchId = React.useRef(null);
   const records = React.useRef([]);
@@ -217,9 +218,11 @@ export const GPSScreen = (props: PropsT): Node => {
           )}
         </MapView>
       )}
-      <View style={viewStyles.userLogoContainer}>
+      <TouchableOpacity
+        style={viewStyles.userLogoButton}
+        onPress={() => setOpenPref(true)}>
         <UserLogo width={30} height={30} />
-      </View>
+      </TouchableOpacity>
       <View style={viewStyles.msgContainer}>
         {error !== '' ? <ErrorMsg msg={error} /> : null}
       </View>
@@ -283,7 +286,9 @@ export const GPSScreen = (props: PropsT): Node => {
         expandable={true}
         openWidthPct={0.75}
         peekWidthPct={0}
-        maxWidthPct={0.8}>
+        maxWidthPct={0.8}
+        nonSlideOpen={openPref}
+        onDrawerOpen={() => setOpenPref(false)}>
         <Text>Hello World</Text>
       </SideDrawer>
     </View>
