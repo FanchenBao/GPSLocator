@@ -10,20 +10,21 @@ import {format} from 'date-fns';
 // Import Types
 import type {GeoPosition} from 'react-native-geolocation-service';
 
+/**
+Upload recorded GPS data to firestore.
+
+This is basically a wrapper for the firestore API. NOTE that the document name
+is the date and each entry in the document has the current timestamp as the
+field name.
+@param gpsRecords An array of GeoPositions provided by react-native-geolocation-service
+  that are recorded for a period of time.
+@return A void promise.
+ */
 export const uploadGPS = async (
   gpsRecords: Array<GeoPosition>,
-  // onUploadSuccess: () => void,
-  // onUploadError: string => void,
 ): Promise<void> => {
   const date = format(new Date(), 'MM-dd-yyyy');
   const curTime = format(new Date(), 'HH-mm-ss');
-  // const docRef = await firestore().collection('data').doc(date);
-  // const docSnapshot = await docRef.get();
-  // if (docSnapshot.exists) {
-  //   return await docRef.update({[curTime]: gpsRecords});
-  // } else {
-  //   return await docRef.set({[curTime]: gpsRecords});
-  // }
   return await firestore()
     .collection('data')
     .doc(date)

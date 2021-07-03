@@ -8,7 +8,6 @@
 import * as React from 'react';
 import {Text, View, TouchableOpacity, Platform} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-simple-toast';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {getLocationUpdates, getLocation} from '../../functions/location';
@@ -46,8 +45,13 @@ type PropsT = {|
   ...DispatchToPropsT,
 |};
 
+/**
+GPSScreen
+
+This is the screen that shows the Google Map, allows user to capture and record
+GPS, and offer a few configurations.
+ */
 export const GPSScreen = (props: PropsT): Node => {
-  const {navigation} = props;
   const [observing, setObserving] = React.useState(false);
   const [recording, setRecording] = React.useState(false); // record all GPS data in one session
   const [location, setLocation] = React.useState(null); // record current GPS data
@@ -58,6 +62,7 @@ export const GPSScreen = (props: PropsT): Node => {
   const [highAccuracy, setHighAccuracy] = React.useState(true);
   const [forceLocation, setForceLocation] = React.useState(true);
   const [locationDialog, setLocationDialog] = React.useState(true);
+  const [mapType, setMapType] = React.useState('satellite');
 
   const watchId = React.useRef(null);
   const records = React.useRef([]);
@@ -182,23 +187,6 @@ export const GPSScreen = (props: PropsT): Node => {
     }
   }, [location, region, mapRef, locationInMapView]);
 
-  // Add log out button on the header
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() =>
-            auth()
-              .signOut()
-              .catch(err => console.log(err))
-          }
-          style={viewStyles.logoutButton}>
-          <Text style={textStyles.link}>Log Out</Text>
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
-
   return (
     <View style={viewStyles.container}>
       {region && (
@@ -206,7 +194,7 @@ export const GPSScreen = (props: PropsT): Node => {
           ref={mapRef}
           provider={PROVIDER_GOOGLE}
           style={viewStyles.map}
-          mapType="satellite"
+          mapType={mapType}
           initialRegion={region}
           moveOnMarkerPress={false}
           onRegionChangeComplete={region_ => setRegion(region_)}>
@@ -314,6 +302,8 @@ export const GPSScreen = (props: PropsT): Node => {
               enable: Platform.OS === 'android',
             },
           ]}
+          mapType={mapType}
+          setMapType={setMapType}
         />
       </SideDrawer>
     </View>

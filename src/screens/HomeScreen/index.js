@@ -41,7 +41,7 @@ type PropsT = {|
 /**
   Home screen.
 
-  The purpose of the home screen is very simple: force any user to log in. The
+  The purpose of the home screen is very simple: force a user to log in. The
   reason for log in is to that Firestore does not allow write permission unless
   a user has been authenticated. Thus, login is necessary.
  */

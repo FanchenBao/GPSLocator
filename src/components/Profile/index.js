@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /**
  *
  * @format
@@ -25,6 +26,8 @@ type OwnPropsT = {|
     enable: boolean,
   }>, // An array of variables for the switches
   widthPct: number, // pct of total width that this component occupies. This must agree with the side drawer open state.
+  mapType: string, // Current map type
+  setMapType: string => void, // assign a new map type
 |};
 
 // Type for the props mapped to dispatch
@@ -38,7 +41,7 @@ type PropsT = {|
 |};
 
 export const Profile = (props: PropsT): Node => {
-  const {switches, widthPct} = props;
+  const {switches, widthPct, mapType, setMapType} = props;
   const {width} = Dimensions.get('window');
   return (
     <View style={[viewStyles.container, {width: width * widthPct}]}>
@@ -63,6 +66,27 @@ export const Profile = (props: PropsT): Node => {
             </View>
           ))}
       </View>
+      <View style={viewStyles.mapTypeContainer}>
+        {['satellite', 'standard'].map(mt => (
+          <TouchableOpacity
+            key={mt}
+            style={[
+              viewStyles.mapTypeButton,
+              {
+                backgroundColor: mapType === mt ? '#2196F3' : 'lightgrey',
+              },
+            ]}
+            onPress={() => setMapType(mt)}>
+            <Text
+              style={[
+                textStyles.buttonText,
+                {color: mapType === mt ? 'white' : '#999999'},
+              ]}>
+              {mt}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
       <View style={viewStyles.logoutButtonContainer}>
         <TouchableOpacity
           style={viewStyles.logoutButton}
@@ -71,7 +95,7 @@ export const Profile = (props: PropsT): Node => {
               .signOut()
               .catch(err => console.log(err))
           }>
-          <Text style={textStyles.logoutText}>Log Out</Text>
+          <Text style={textStyles.buttonText}>Log Out</Text>
         </TouchableOpacity>
       </View>
     </View>

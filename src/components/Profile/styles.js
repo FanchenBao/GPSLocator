@@ -31,6 +31,8 @@ export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
     flex: 0.3,
     justifyContent: 'space-evenly',
     paddingLeft: 15,
+    borderBottomWidth: 2,
+    borderBottomColor: 'lightgrey',
   },
   idvSwitch: {
     flexDirection: 'row',
@@ -39,6 +41,19 @@ export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
   switch: {
     marginLeft: 'auto',
     marginRight: 20,
+  },
+  mapTypeContainer: {
+    flex: 0.3,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+  mapTypeButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+    width: 100,
+    borderRadius: 15,
   },
   logoutButtonContainer: {
     flex: 1,
@@ -65,7 +80,7 @@ export const textStyles: {[string]: TextStyleProp} = StyleSheet.create({
     fontSize: 20,
     color: 'black',
   },
-  logoutText: {
+  buttonText: {
     fontSize: 20,
     color: 'black',
   },
