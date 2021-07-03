@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react';
-import {Text, View, TouchableOpacity} from 'react-native';
+import {Text, View, TouchableOpacity, Platform} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import auth from '@react-native-firebase/auth';
 import Toast from 'react-native-simple-toast';
@@ -17,6 +17,7 @@ import {uploadGPS} from '../../functions/database.js';
 import {viewStyles, textStyles} from './styles.js';
 import {ErrorMsg} from '../../components/ErrorMsg/index.js';
 import {SideDrawer} from '../../components/SideDrawer/index.js';
+import {Profile} from '../../components/Profile/index.js';
 import UserLogo from '../../assets/user.svg';
 
 // Import types
@@ -53,7 +54,10 @@ export const GPSScreen = (props: PropsT): Node => {
   const [region, setRegion] = React.useState(null); // record current map view region
   const [error, setError] = React.useState('');
   const [hasInternet, setHasInternet] = React.useState(true);
-  const [openPref, setOpenPref] = React.useState(false); // Flag to indicate the opening of user prefernce
+  const [openProfile, setOpenProfile] = React.useState(false); // Flag to indicate the opening of user prefernce
+  const [highAccuracy, setHighAccuracy] = React.useState(true);
+  const [forceLocation, setForceLocation] = React.useState(true);
+  const [locationDialog, setLocationDialog] = React.useState(true);
 
   const watchId = React.useRef(null);
   const records = React.useRef([]);
@@ -220,7 +224,7 @@ export const GPSScreen = (props: PropsT): Node => {
       )}
       <TouchableOpacity
         style={viewStyles.userLogoButton}
-        onPress={() => setOpenPref(true)}>
+        onPress={() => setOpenProfile(true)}>
         <UserLogo width={30} height={30} />
       </TouchableOpacity>
       <View style={viewStyles.msgContainer}>
@@ -283,12 +287,34 @@ export const GPSScreen = (props: PropsT): Node => {
         </View>
       </View>
       <SideDrawer
-        openWidthPct={0.75}
+        openWidthPct={0.7}
         peekWidthPct={0}
         maxWidthPct={0.8}
-        nonSlideOpen={openPref}
-        onDrawerOpen={() => setOpenPref(false)}>
-        <Text>Hello World</Text>
+        nonSlideOpen={openProfile}
+        onDrawerOpen={() => setOpenProfile(false)}>
+        <Profile
+          widthPct={0.7}
+          switches={[
+            {
+              value: highAccuracy,
+              onValueChange: () => setHighAccuracy(preS => !preS),
+              text: 'High Accuracy',
+              enable: true,
+            },
+            {
+              value: forceLocation,
+              onValueChange: () => setForceLocation(preS => !preS),
+              text: 'Force Location',
+              enable: true,
+            },
+            {
+              value: locationDialog,
+              onValueChange: () => setLocationDialog(preS => !preS),
+              text: 'Location Dialog',
+              enable: Platform.OS === 'android',
+            },
+          ]}
+        />
       </SideDrawer>
     </View>
   );

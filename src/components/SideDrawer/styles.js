@@ -15,7 +15,6 @@ export const styles: {[string]: ViewStyleProp} = StyleSheet.create({
   drawerContainer: {
     height: '100%',
     backgroundColor: 'white',
-    alignItems: 'flex-start',
     position: 'absolute',
   },
 });
