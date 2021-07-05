@@ -25,6 +25,7 @@ type OwnPropsT = {|
   maxWidthPct: number, // maximum pct of width allowed for a user to drag the drawer.
   expandable?: boolean, // whether the drawer is expandable. If set to false, the drawer cannot expand beyond the peek state
   nonSlideOpen?: boolean, // a flag indicating whether the drawer should open without user sliding. Useful when the drawer needs to be opened programmatically. Default to false.
+  nonSlideClose?: boolean, // a flag indicating whether the drawer should close without user sliding. Useful when the drawer needs to be closed programmatically. Default to false.
   onDrawerOpen?: () => void, // callback when the drawer is in open state.
   onDrawerPeek?: () => void, // callback when the drawer is in peek state.
 |};
@@ -51,6 +52,8 @@ export const SideDrawer = (props: PropsT): Node => {
   const expandable = props.expandable === undefined ? true : props.expandable;
   const nonSlideOpen =
     props.nonSlideOpen === undefined ? false : props.nonSlideOpen;
+  const nonSlideClose =
+    props.nonSlideClose === undefined ? false : props.nonSlideClose;
   const onDrawerOpen = React.useCallback(() => {
     if (props.onDrawerOpen) {
       props.onDrawerOpen();
@@ -129,13 +132,17 @@ export const SideDrawer = (props: PropsT): Node => {
     }),
   ).current;
 
-  // Perform non-slide open of the drawer
+  // Perform non-slide open or close of the drawer
   React.useEffect(() => {
     if (state._value === DrawerState.Peek && nonSlideOpen) {
       state.setValue(DrawerState.Open);
       animate(getNextDeltaX(DrawerState.Open));
     }
-  }, [state, DrawerState, animate, getNextDeltaX, nonSlideOpen]);
+    if (state._value === DrawerState.Open && nonSlideClose) {
+      state.setValue(DrawerState.Peek);
+      animate(getNextDeltaX(DrawerState.Peek));
+    }
+  }, [state, DrawerState, animate, getNextDeltaX, nonSlideOpen, nonSlideClose]);
 
   // on drawer open or peek callback
   React.useEffect(() => {

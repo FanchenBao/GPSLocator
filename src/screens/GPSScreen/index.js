@@ -17,6 +17,7 @@ import {viewStyles, textStyles} from './styles.js';
 import {ErrorMsg} from '../../components/ErrorMsg/index.js';
 import {SideDrawer} from '../../components/SideDrawer/index.js';
 import {Profile} from '../../components/Profile/index.js';
+import {HideInteraction} from '../../components/hideInteraction.js';
 import UserLogo from '../../assets/user.svg';
 
 // Import types
@@ -59,6 +60,7 @@ export const GPSScreen = (props: PropsT): Node => {
   const [error, setError] = React.useState('');
   const [hasInternet, setHasInternet] = React.useState(true);
   const [openProfile, setOpenProfile] = React.useState(false); // Flag to indicate the opening of user prefernce
+  const [closeProfile, setCloseProfile] = React.useState(false); // Flag to indicate the closing of user prefernce
   const [highAccuracy, setHighAccuracy] = React.useState(true);
   const [forceLocation, setForceLocation] = React.useState(true);
   const [locationDialog, setLocationDialog] = React.useState(true);
@@ -218,68 +220,72 @@ export const GPSScreen = (props: PropsT): Node => {
       <View style={viewStyles.msgContainer}>
         {error !== '' ? <ErrorMsg msg={error} /> : null}
       </View>
-      <View style={viewStyles.contentContainer}>
-        <View style={viewStyles.buttonContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              observing
-                ? removeLocationUpdates()
-                : getLocationUpdates(
-                    setObserving,
-                    setLocation,
-                    watchId,
-                    true,
-                    true,
-                    true,
-                  );
-            }}
-            style={[
-              viewStyles.gpsButton,
-              {backgroundColor: observing ? 'red' : '#2196F3'},
-            ]}>
-            <Text style={textStyles.buttonText}>
-              {observing ? 'Stop GPS' : 'Start GPS'}
+      <HideInteraction onPress={() => setCloseProfile(true)}>
+        <View style={viewStyles.contentContainer}>
+          <View style={viewStyles.buttonContainer}>
+            <TouchableOpacity
+              onPress={() => {
+                observing
+                  ? removeLocationUpdates()
+                  : getLocationUpdates(
+                      setObserving,
+                      setLocation,
+                      watchId,
+                      true,
+                      true,
+                      true,
+                    );
+              }}
+              style={[
+                viewStyles.gpsButton,
+                {backgroundColor: observing ? 'red' : '#2196F3'},
+              ]}>
+              <Text style={textStyles.buttonText}>
+                {observing ? 'Stop GPS' : 'Start GPS'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={
+                // only record if we are already observing GPS
+                () => (recording ? stopRecording() : setRecording(observing))
+              }
+              style={[
+                viewStyles.recordButton,
+                {
+                  backgroundColor: hasInternet
+                    ? recording
+                      ? 'red'
+                      : '#40ff00'
+                    : 'grey',
+                },
+              ]}
+              disabled={!hasInternet}>
+              <Text style={textStyles.buttonText}>
+                {recording ? 'Stop Record' : 'Start Record'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={viewStyles.resultContainer}>
+            <Text>Latitude: {location?.coords?.latitude || ''}</Text>
+            <Text>Longitude: {location?.coords?.longitude || ''}</Text>
+            <Text>Accuracy: {location?.coords?.accuracy}</Text>
+            <Text>
+              Timestamp:{' '}
+              {location?.timestamp
+                ? new Date(location.timestamp).toLocaleString()
+                : ''}
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={
-              // only record if we are already observing GPS
-              () => (recording ? stopRecording() : setRecording(observing))
-            }
-            style={[
-              viewStyles.recordButton,
-              {
-                backgroundColor: hasInternet
-                  ? recording
-                    ? 'red'
-                    : '#40ff00'
-                  : 'grey',
-              },
-            ]}
-            disabled={!hasInternet}>
-            <Text style={textStyles.buttonText}>
-              {recording ? 'Stop Record' : 'Start Record'}
-            </Text>
-          </TouchableOpacity>
+          </View>
         </View>
-        <View style={viewStyles.resultContainer}>
-          <Text>Latitude: {location?.coords?.latitude || ''}</Text>
-          <Text>Longitude: {location?.coords?.longitude || ''}</Text>
-          <Text>Accuracy: {location?.coords?.accuracy}</Text>
-          <Text>
-            Timestamp:{' '}
-            {location?.timestamp
-              ? new Date(location.timestamp).toLocaleString()
-              : ''}
-          </Text>
-        </View>
-      </View>
+      </HideInteraction>
       <SideDrawer
         openWidthPct={0.7}
         peekWidthPct={0}
         maxWidthPct={0.8}
         nonSlideOpen={openProfile}
-        onDrawerOpen={() => setOpenProfile(false)}>
+        nonSlideClose={closeProfile}
+        onDrawerOpen={() => setOpenProfile(false)}
+        onDrawerPeek={() => setCloseProfile(false)}>
         <Profile
           widthPct={0.7}
           switches={[
