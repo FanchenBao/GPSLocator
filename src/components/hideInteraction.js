@@ -11,7 +11,7 @@ import type {Node} from 'react';
 type PropsT = {
   // The actual component of the screen which is to be wrapped by
   // HideInteraction
-  children?: React.Node,
+  children?: Node,
   // Action to perform when any part of the HideInteraction is pressed. Write
   // the logic of hiding interaction in this callback.
   onPress: () => void,

@@ -47,23 +47,17 @@ const HorizontalLine = () => <View style={styles.horizontalLine} />;
 	Inspired by: https://dev.to/johannawad/creating-a-swipe-up-bottom-drawer-in-react-native-no-external-libraries-3ng1
  */
 export const SideDrawer = (props: PropsT): Node => {
-  const {children, peekWidthPct, openWidthPct, maxWidthPct} = props;
-  // Specify default prop values
-  const expandable = props.expandable === undefined ? true : props.expandable;
-  const nonSlideOpen =
-    props.nonSlideOpen === undefined ? false : props.nonSlideOpen;
-  const nonSlideClose =
-    props.nonSlideClose === undefined ? false : props.nonSlideClose;
-  const onDrawerOpen = React.useCallback(() => {
-    if (props.onDrawerOpen) {
-      props.onDrawerOpen();
-    }
-  }, [props]);
-  const onDrawerPeek = React.useCallback(() => {
-    if (props.onDrawerPeek) {
-      props.onDrawerPeek();
-    }
-  }, [props]);
+  const {
+    children,
+    peekWidthPct,
+    openWidthPct,
+    maxWidthPct,
+    expandable = true,
+    nonSlideOpen = false,
+    nonSlideClose = false,
+    onDrawerOpen = () => {},
+    onDrawerPeek = () => {},
+  } = props;
 
   const {width} = Dimensions.get('window');
   // State is the width of the drawer
@@ -89,6 +83,7 @@ export const SideDrawer = (props: PropsT): Node => {
     }
   };
 
+  // Obtain the deltaX needed to reach the next drawer state.
   const getNextDeltaX = React.useCallback(
     (nextState: number): number => {
       switch (nextState) {
@@ -103,15 +98,40 @@ export const SideDrawer = (props: PropsT): Node => {
     [DrawerState],
   );
 
+  // Callbacks upon Open or Peek drawer state is reached.
+  const onReachNextState = React.useCallback(
+    (nextState: number): void => {
+      switch (nextState) {
+        case DrawerState.Open:
+          return onDrawerOpen();
+        case DrawerState.Peek:
+          return onDrawerPeek();
+        default:
+          return;
+      }
+    },
+    [DrawerState, onDrawerOpen, onDrawerPeek],
+  );
+
+  // Animate the movement of the drawer. Note that since the animation always
+  // finishes at a new drawer state, we place the onReachNewState() callback
+  // upon animation completion.
   const animate = React.useCallback(
-    (nextDeltaX: number) => {
+    (nextState: number) => {
+      const nextDeltaX = getNextDeltaX(nextState);
       Animated.spring(deltaX, {
         toValue: nextDeltaX,
         speed: 40,
         useNativeDriver: false,
-      }).start();
+      }).start(({finished}) => {
+        // Callback upon successful animation.
+        if (finished) {
+          state.setValue(nextState);
+          onReachNextState(nextState);
+        }
+      });
     },
-    [deltaX],
+    [state, deltaX, getNextDeltaX, onReachNextState],
   );
 
   const panResponder = React.useRef(
@@ -120,14 +140,12 @@ export const SideDrawer = (props: PropsT): Node => {
         expandable && Math.abs(dx) >= 10, // enable pan only if there is sufficient finger movement
       onPanResponderGrant: () => deltaX.setOffset(deltaX._value),
       onPanResponderMove: (event, {dx}) => {
-        // prevent user from moving the drawer too high
+        // prevent user from moving the drawer too much
         deltaX.setValue(Math.max(dx, state._value - width * maxWidthPct));
       },
       onPanResponderRelease: (event, {dx}) => {
         deltaX.flattenOffset();
-        const nextState = getNextState(state._value, dx);
-        state.setValue(nextState);
-        animate(getNextDeltaX(nextState));
+        animate(getNextState(state._value, dx));
       },
     }),
   ).current;
@@ -135,24 +153,11 @@ export const SideDrawer = (props: PropsT): Node => {
   // Perform non-slide open or close of the drawer
   React.useEffect(() => {
     if (state._value === DrawerState.Peek && nonSlideOpen) {
-      state.setValue(DrawerState.Open);
-      animate(getNextDeltaX(DrawerState.Open));
-    }
-    if (state._value === DrawerState.Open && nonSlideClose) {
-      state.setValue(DrawerState.Peek);
-      animate(getNextDeltaX(DrawerState.Peek));
+      animate(DrawerState.Open);
+    } else if (state._value === DrawerState.Open && nonSlideClose) {
+      animate(DrawerState.Peek);
     }
   }, [state, DrawerState, animate, getNextDeltaX, nonSlideOpen, nonSlideClose]);
-
-  // on drawer open or peek callback
-  React.useEffect(() => {
-    if (state._value === DrawerState.Open) {
-      onDrawerOpen();
-    }
-    if (state._value === DrawerState.Peek) {
-      onDrawerPeek();
-    }
-  }, [state, DrawerState, onDrawerOpen, onDrawerPeek]);
 
   return (
     <Animated.View

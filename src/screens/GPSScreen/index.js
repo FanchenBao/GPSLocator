@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react';
-import {Text, View, TouchableOpacity, Platform} from 'react-native';
+import {Text, View, TouchableOpacity} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import Toast from 'react-native-simple-toast';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
@@ -19,6 +19,7 @@ import {SideDrawer} from '../../components/SideDrawer/index.js';
 import {Profile} from '../../components/Profile/index.js';
 import {HideInteraction} from '../../components/hideInteraction.js';
 import UserLogo from '../../assets/user.svg';
+import {AppContext} from '../../context/store.js';
 
 // Import types
 import type {
@@ -59,12 +60,16 @@ export const GPSScreen = (props: PropsT): Node => {
   const [region, setRegion] = React.useState(null); // record current map view region
   const [error, setError] = React.useState('');
   const [hasInternet, setHasInternet] = React.useState(true);
-  const [openProfile, setOpenProfile] = React.useState(false); // Flag to indicate the opening of user prefernce
-  const [closeProfile, setCloseProfile] = React.useState(false); // Flag to indicate the closing of user prefernce
-  const [highAccuracy, setHighAccuracy] = React.useState(true);
-  const [forceLocation, setForceLocation] = React.useState(true);
-  const [locationDialog, setLocationDialog] = React.useState(true);
-  const [mapType, setMapType] = React.useState('satellite');
+  const {
+    openProfile,
+    closeProfile,
+    setOpenProfile,
+    setCloseProfile,
+    highAccuracy,
+    forceLocation,
+    locationDialog,
+    mapType,
+  } = React.useContext(AppContext);
 
   const watchId = React.useRef(null);
   const records = React.useRef([]);
@@ -164,11 +169,11 @@ export const GPSScreen = (props: PropsT): Node => {
           });
         }
       },
-      true,
-      true,
-      true,
+      highAccuracy,
+      forceLocation,
+      locationDialog,
     );
-  }, []);
+  }, [highAccuracy, forceLocation, locationDialog]);
 
   // Automatically switch map view if the current location is out of the bound
   // of the screen. NOTE: we are using mapRef.current.animateToRegion to
@@ -231,9 +236,9 @@ export const GPSScreen = (props: PropsT): Node => {
                       setObserving,
                       setLocation,
                       watchId,
-                      true,
-                      true,
-                      true,
+                      highAccuracy,
+                      forceLocation,
+                      locationDialog,
                     );
               }}
               style={[
@@ -286,31 +291,7 @@ export const GPSScreen = (props: PropsT): Node => {
         nonSlideClose={closeProfile}
         onDrawerOpen={() => setOpenProfile(false)}
         onDrawerPeek={() => setCloseProfile(false)}>
-        <Profile
-          widthPct={0.7}
-          switches={[
-            {
-              value: highAccuracy,
-              onValueChange: () => setHighAccuracy(preS => !preS),
-              text: 'High Accuracy',
-              enable: true,
-            },
-            {
-              value: forceLocation,
-              onValueChange: () => setForceLocation(preS => !preS),
-              text: 'Force Location',
-              enable: true,
-            },
-            {
-              value: locationDialog,
-              onValueChange: () => setLocationDialog(preS => !preS),
-              text: 'Location Dialog',
-              enable: Platform.OS === 'android',
-            },
-          ]}
-          mapType={mapType}
-          setMapType={setMapType}
-        />
+        <Profile widthPct={0.7} />
       </SideDrawer>
     </View>
   );

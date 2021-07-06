@@ -6,8 +6,16 @@
  */
 
 import * as React from 'react';
-import {Text, View, TouchableOpacity, Switch, Dimensions} from 'react-native';
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Switch,
+  Dimensions,
+  Platform,
+} from 'react-native';
 import auth from '@react-native-firebase/auth';
+import {AppContext} from '../../context/store.js';
 import {viewStyles, textStyles} from './styles';
 
 // Import types
@@ -19,15 +27,7 @@ type StatePropsT = {||};
 
 // Type for the props passed from its parent, if applicable
 type OwnPropsT = {|
-  switches: Array<{
-    onValueChange: () => void,
-    value: boolean,
-    text: string,
-    enable: boolean,
-  }>, // An array of variables for the switches
   widthPct: number, // pct of total width that this component occupies. This must agree with the side drawer open state.
-  mapType: string, // Current map type
-  setMapType: string => void, // assign a new map type
 |};
 
 // Type for the props mapped to dispatch
@@ -41,8 +41,38 @@ type PropsT = {|
 |};
 
 export const Profile = (props: PropsT): Node => {
-  const {switches, widthPct, mapType, setMapType} = props;
+  const {widthPct} = props;
+  const {
+    highAccuracy,
+    setHighAccuracy,
+    locationDialog,
+    setLocationDialog,
+    forceLocation,
+    setForceLocation,
+    mapType,
+    setMapType,
+  } = React.useContext(AppContext);
   const {width} = Dimensions.get('window');
+  const switches = [
+    {
+      onValueChange: () => setHighAccuracy(!highAccuracy),
+      value: highAccuracy,
+      text: 'High Accuracy',
+      enable: true,
+    },
+    {
+      onValueChange: () => setForceLocation(!forceLocation),
+      value: forceLocation,
+      text: 'Force Location',
+      enable: true,
+    },
+    {
+      onValueChange: () => setLocationDialog(!locationDialog),
+      value: locationDialog,
+      text: 'Location Dialog',
+      enable: Platform.OS === 'android',
+    },
+  ];
   return (
     <View style={[viewStyles.container, {width: width * widthPct}]}>
       <View style={viewStyles.header}>

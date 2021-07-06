@@ -13,6 +13,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {HomeScreen} from './src/screens/HomeScreen/index.js';
 import {GPSScreen} from './src/screens/GPSScreen/index.js';
+import {Provider} from './src/context/store.js';
 import auth from '@react-native-firebase/auth';
 
 // Import type
@@ -38,28 +39,30 @@ const App: () => Node = () => {
     return subscriber; // unsubscribe on unmount
   });
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}>
-          {user ? ( // Follow best practice: https://reactnavigation.org/docs/auth-flow
-            <>
-              <Stack.Screen
-                name="GPS"
-                options={{gestureEnabled: false}}
-                component={GPSScreen}
-              />
-            </>
-          ) : (
-            <>
-              <Stack.Screen name="Log In" component={HomeScreen} />
-            </>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+    <Provider>
+      <SafeAreaView style={{flex: 1}}>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}>
+            {user ? ( // Follow best practice: https://reactnavigation.org/docs/auth-flow
+              <>
+                <Stack.Screen
+                  name="GPS"
+                  options={{gestureEnabled: false}}
+                  component={GPSScreen}
+                />
+              </>
+            ) : (
+              <>
+                <Stack.Screen name="Log In" component={HomeScreen} />
+              </>
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaView>
+    </Provider>
   );
 };
 
