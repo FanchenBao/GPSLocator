@@ -7,7 +7,7 @@
  */
 
 import * as React from 'react';
-import {Animated, View, Dimensions, PanResponder} from 'react-native';
+import {Animated, Dimensions, PanResponder} from 'react-native';
 import {styles} from './styles.js';
 
 // Import types
@@ -38,8 +38,6 @@ type PropsT = {|
   ...StatePropsT,
   ...DispatchToPropsT,
 |};
-
-const HorizontalLine = () => <View style={styles.horizontalLine} />;
 
 /**
 	Function component of SideDrawer
@@ -177,7 +175,6 @@ export const SideDrawer = (props: PropsT): Node => {
       ]}
       /* Refers to the PanResponder created above */
       {...panResponder.panHandlers}>
-      <HorizontalLine />
       {children}
     </Animated.View>
   );
