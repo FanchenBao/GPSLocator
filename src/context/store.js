@@ -11,8 +11,6 @@ import {actions} from './actions.js';
 // Import types
 import type {Node} from 'react';
 export type StateT = {
-  openProfile: boolean,
-  closeProfile: boolean,
   highAccuracy: boolean,
   forceLocation: boolean,
   locationDialog: boolean,
@@ -21,12 +19,10 @@ export type StateT = {
 };
 
 const initialState: StateT = {
-  openProfile: false,
-  closeProfile: false,
   highAccuracy: true,
   forceLocation: true,
   locationDialog: true,
-  gpsInterval: 100,
+  gpsInterval: 100, // millisecond unit. 1000 millisecond = 1 second
   mapType: 'satellite',
 };
 
@@ -41,19 +37,11 @@ export const Provider = (props: PropsT): Node => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   const value = {
-    openProfile: state.openProfile,
-    closeProfile: state.closeProfile,
     highAccuracy: state.highAccuracy,
     forceLocation: state.forceLocation,
     locationDialog: state.locationDialog,
     gpsInterval: state.gpsInterval,
     mapType: state.mapType,
-    setOpenProfile: (val: boolean) => {
-      dispatch({type: actions.SET_OPEN_PROFILE, openProfile: val});
-    },
-    setCloseProfile: (val: boolean) => {
-      dispatch({type: actions.SET_CLOSE_PROFILE, closeProfile: val});
-    },
     setHighAccuracy: (val: boolean) => {
       dispatch({type: actions.SET_HIGH_ACCURACY, highAccuracy: val});
     },

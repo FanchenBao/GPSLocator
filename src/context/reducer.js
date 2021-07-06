@@ -11,10 +11,6 @@ import type {ActionT} from './actions.js';
 
 export const reducer = (state: StateT, action: ActionT): StateT => {
   switch (action.type) {
-    case actions.SET_OPEN_PROFILE:
-      return {...state, openProfile: action.openProfile};
-    case actions.SET_CLOSE_PROFILE:
-      return {...state, closeProfile: action.closeProfile};
     case actions.SET_HIGH_ACCURACY:
       return {...state, highAccuracy: action.highAccuracy};
     case actions.SET_FORCE_LOCATION:

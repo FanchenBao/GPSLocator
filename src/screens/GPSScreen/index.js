@@ -60,16 +60,9 @@ export const GPSScreen = (props: PropsT): Node => {
   const [region, setRegion] = React.useState(null); // record current map view region
   const [error, setError] = React.useState('');
   const [hasInternet, setHasInternet] = React.useState(true);
-  const {
-    openProfile,
-    closeProfile,
-    setOpenProfile,
-    setCloseProfile,
-    highAccuracy,
-    forceLocation,
-    locationDialog,
-    mapType,
-  } = React.useContext(AppContext);
+  const [nonSlideOpen, setNonSlideOpen] = React.useState(false);
+  const {highAccuracy, forceLocation, locationDialog, gpsInterval, mapType} =
+    React.useContext(AppContext);
 
   const watchId = React.useRef(null);
   const records = React.useRef([]);
@@ -219,13 +212,13 @@ export const GPSScreen = (props: PropsT): Node => {
       )}
       <TouchableOpacity
         style={viewStyles.userLogoButton}
-        onPress={() => setOpenProfile(true)}>
+        onPress={() => setNonSlideOpen(true)}>
         <UserLogo width={30} height={30} />
       </TouchableOpacity>
       <View style={viewStyles.msgContainer}>
         {error !== '' ? <ErrorMsg msg={error} /> : null}
       </View>
-      <HideInteraction onPress={() => setCloseProfile(true)}>
+      <HideInteraction onPress={() => setNonSlideOpen(false)}>
         <View style={viewStyles.contentContainer}>
           <View style={viewStyles.buttonContainer}>
             <TouchableOpacity
@@ -236,6 +229,7 @@ export const GPSScreen = (props: PropsT): Node => {
                       setObserving,
                       setLocation,
                       watchId,
+                      gpsInterval,
                       highAccuracy,
                       forceLocation,
                       locationDialog,
@@ -287,10 +281,9 @@ export const GPSScreen = (props: PropsT): Node => {
         openWidthPct={0.7}
         peekWidthPct={0}
         maxWidthPct={0.8}
-        nonSlideOpen={openProfile}
-        nonSlideClose={closeProfile}
-        onDrawerOpen={() => setOpenProfile(false)}
-        onDrawerPeek={() => setCloseProfile(false)}>
+        nonSlideOpen={nonSlideOpen}
+        onDrawerOpen={() => setNonSlideOpen(true)}
+        onDrawerPeek={() => setNonSlideOpen(false)}>
         <Profile widthPct={0.7} />
       </SideDrawer>
     </View>

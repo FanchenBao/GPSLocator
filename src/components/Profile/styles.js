@@ -42,6 +42,16 @@ export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
     marginLeft: 'auto',
     marginRight: 20,
   },
+  sliderContainer: {
+    flex: 0.3,
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    borderBottomWidth: 2,
+    borderBottomColor: 'lightgrey',
+  },
+  slider: {
+    width: '80%',
+  },
   mapTypeContainer: {
     flex: 0.3,
     flexDirection: 'row',
@@ -56,7 +66,7 @@ export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
     borderRadius: 15,
   },
   logoutButtonContainer: {
-    flex: 1,
+    flex: 0.8,
     // borderWidth: 2,
     // borderColor: 'red',
   },

@@ -2,6 +2,5 @@
   "name": "GPSLocator",
   "displayName": "GPSLocator",
   "timeout": 10000,
-  "maxGPSAge": 100,
-  "interval": 100
+  "maxGPSAge": 1000
 }

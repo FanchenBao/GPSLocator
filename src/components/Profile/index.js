@@ -15,6 +15,7 @@ import {
   Platform,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import Slider from '@react-native-community/slider';
 import {AppContext} from '../../context/store.js';
 import {viewStyles, textStyles} from './styles';
 
@@ -49,9 +50,13 @@ export const Profile = (props: PropsT): Node => {
     setLocationDialog,
     forceLocation,
     setForceLocation,
+    gpsInterval,
+    setGPSInterval,
     mapType,
     setMapType,
   } = React.useContext(AppContext);
+  const [slideVal, setSlideVal] = React.useState(gpsInterval / 1000);
+
   const {width} = Dimensions.get('window');
   const switches = [
     {
@@ -95,6 +100,29 @@ export const Profile = (props: PropsT): Node => {
               />
             </View>
           ))}
+      </View>
+      <View style={viewStyles.sliderContainer}>
+        <Text
+          style={
+            textStyles.switchText
+          }>{`GPS Update Interval: ${slideVal.toFixed(1)} s`}</Text>
+        <Slider
+          style={[
+            viewStyles.slider,
+            Platform.OS === 'android' && {
+              width: '60%',
+              transform: [{scaleX: 1.5}, {scaleY: 1.5}],
+            },
+          ]}
+          minimumValue={0.1}
+          maximumValue={5}
+          value={slideVal}
+          minimumTrackTintColor="#2196F3"
+          maximumTrackTintColor="#bfbfbf"
+          step={0.5}
+          onValueChange={val => setSlideVal(val)}
+          onSlidingComplete={val => setGPSInterval(val * 1000)}
+        />
       </View>
       <View style={viewStyles.mapTypeContainer}>
         {['satellite', 'standard'].map(mt => (

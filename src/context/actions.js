@@ -5,8 +5,6 @@
  */
 
 export const actions = {
-  SET_OPEN_PROFILE: 'SET_OPEN_PROFILE',
-  SET_CLOSE_PROFILE: 'SET_CLOSE_PROFILE',
   SET_HIGH_ACCURACY: 'SET_HIGH_ACCURACY',
   SET_FORCE_LOCATION: 'SET_FORCE_LOCATION',
   SET_LOCATION_DIALOG: 'SET_LOCATION_DIALOG',
@@ -14,15 +12,6 @@ export const actions = {
   SET_MAP_TYPE: 'SET_MAP_TYPE',
 };
 
-type SetOpenProfileActionT = {
-  type: typeof actions.SET_OPEN_PROFILE,
-  openProfile: boolean,
-};
-
-type SetCloseProfileActionT = {
-  type: typeof actions.SET_CLOSE_PROFILE,
-  closeProfile: boolean,
-};
 type SetHighAccuracyActionT = {
   type: typeof actions.SET_HIGH_ACCURACY,
   highAccuracy: boolean,
@@ -42,8 +31,6 @@ type SetGPSIntervalActionT = {
 type SetMapTypeActionT = {type: typeof actions.SET_MAP_TYPE, mapType: string};
 
 export type ActionT =
-  | SetOpenProfileActionT
-  | SetCloseProfileActionT
   | SetHighAccuracyActionT
   | SetForceLocationActionT
   | SetLocationDialogActionT

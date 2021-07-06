@@ -25,7 +25,6 @@ type OwnPropsT = {|
   maxWidthPct: number, // maximum pct of width allowed for a user to drag the drawer.
   expandable?: boolean, // whether the drawer is expandable. If set to false, the drawer cannot expand beyond the peek state
   nonSlideOpen?: boolean, // a flag indicating whether the drawer should open without user sliding. Useful when the drawer needs to be opened programmatically. Default to false.
-  nonSlideClose?: boolean, // a flag indicating whether the drawer should close without user sliding. Useful when the drawer needs to be closed programmatically. Default to false.
   onDrawerOpen?: () => void, // callback when the drawer is in open state.
   onDrawerPeek?: () => void, // callback when the drawer is in peek state.
 |};
@@ -54,7 +53,6 @@ export const SideDrawer = (props: PropsT): Node => {
     maxWidthPct,
     expandable = true,
     nonSlideOpen = false,
-    nonSlideClose = false,
     onDrawerOpen = () => {},
     onDrawerPeek = () => {},
   } = props;
@@ -88,7 +86,7 @@ export const SideDrawer = (props: PropsT): Node => {
     (nextState: number): number => {
       switch (nextState) {
         case DrawerState.Open:
-          return DrawerState.Peek - DrawerState.Open; // negative value, going up
+          return DrawerState.Peek - DrawerState.Open; // negative value, going left
         case DrawerState.Peek:
           return 0; // We start at peek. If end at peek as well, no move
         default:
@@ -118,9 +116,11 @@ export const SideDrawer = (props: PropsT): Node => {
   // upon animation completion.
   const animate = React.useCallback(
     (nextState: number) => {
-      const nextDeltaX = getNextDeltaX(nextState);
+      // NOTE: It is paramount to flattenOffset() such that the direct value
+      // change that follows will not be affected by any extra offset.
+      deltaX.flattenOffset();
       Animated.spring(deltaX, {
-        toValue: nextDeltaX,
+        toValue: getNextDeltaX(nextState),
         speed: 40,
         useNativeDriver: false,
       }).start(({finished}) => {
@@ -138,13 +138,19 @@ export const SideDrawer = (props: PropsT): Node => {
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, {dx}) =>
         expandable && Math.abs(dx) >= 10, // enable pan only if there is sufficient finger movement
-      onPanResponderGrant: () => deltaX.setOffset(deltaX._value),
+      onPanResponderGrant: (event, {dx}) => {
+        // NOTE: It is paramount that we use extractOffset() instead of
+        // setOffset(deltaX._value), because setOffset(deltaX._value) retains
+        // the original value, which essentially changes the overall output
+        // of deltaX. What we want is to move everything from value to offset
+        // while not changing the overall output.
+        deltaX.extractOffset();
+      },
       onPanResponderMove: (event, {dx}) => {
         // prevent user from moving the drawer too much
         deltaX.setValue(Math.max(dx, state._value - width * maxWidthPct));
       },
       onPanResponderRelease: (event, {dx}) => {
-        deltaX.flattenOffset();
         animate(getNextState(state._value, dx));
       },
     }),
@@ -154,10 +160,10 @@ export const SideDrawer = (props: PropsT): Node => {
   React.useEffect(() => {
     if (state._value === DrawerState.Peek && nonSlideOpen) {
       animate(DrawerState.Open);
-    } else if (state._value === DrawerState.Open && nonSlideClose) {
+    } else if (state._value === DrawerState.Open && !nonSlideOpen) {
       animate(DrawerState.Peek);
     }
-  }, [state, DrawerState, animate, getNextDeltaX, nonSlideOpen, nonSlideClose]);
+  });
 
   return (
     <Animated.View
