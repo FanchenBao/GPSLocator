@@ -23,7 +23,7 @@ The app is written in React Native and can run on both Android and iOS. To build
 1. Set up the environment for React Native according to the [documentation](https://reactnative.dev/docs/environment-setup). Please follow the "React Native CLI Quickstart". If you have React Native set up already, skip this step.
 2. Clone this repo
 	```bash
-	git clone 
+	git clone https://github.com/FanchenBao/GPSLocator.git
 	```
 3. Remove all the `.secret` files and `.gitsecret` folder.
 	```bash
