@@ -1,33 +1,28 @@
-/* eslint-disable react-native/no-inline-styles */
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
  *
  * @format
- * @flow
  */
 
 import React from 'react';
 import {SafeAreaView} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {HomeScreen} from './src/screens/HomeScreen/index.js';
-import {GPSScreen} from './src/screens/GPSScreen/index.js';
-import {Provider} from './src/context/store.js';
+import {HomeScreen} from './src/screens/HomeScreen/index';
+import {GPSScreen} from './src/screens/GPSScreen/index';
+import {Provider} from './src/context/store';
 import auth from '@react-native-firebase/auth';
 
-// Import type
-import type {Node} from 'react';
+const Stack = createStackNavigator<NavigationT.RootStackT>();
 
-const Stack = createStackNavigator();
-
-const App: () => Node = () => {
+const App: React.FC = () => {
   // Set an initializing state whilst Firebase connects
-  const [initializing, setInitializing] = React.useState(true);
-  const [user, setUser] = React.useState();
+  const [initializing, setInitializing] = React.useState<boolean>(true);
+  const [user, setUser] = React.useState<FirebaseT.UserT>();
 
   // Handle user state changes
-  const onAuthStateChanged = currentUser => {
+  const onAuthStateChanged = (currentUser: FirebaseT.UserT) => {
     setUser(currentUser);
     if (initializing) {
       setInitializing(false);
@@ -56,7 +51,7 @@ const App: () => Node = () => {
               </>
             ) : (
               <>
-                <Stack.Screen name="Log In" component={HomeScreen} />
+                <Stack.Screen name="LogIn" component={HomeScreen} />
               </>
             )}
           </Stack.Navigator>

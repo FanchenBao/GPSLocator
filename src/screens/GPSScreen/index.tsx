@@ -1,8 +1,6 @@
-/* eslint-disable react-native/no-inline-styles */
 /**
  *
  * @format
- * @flow
  */
 
 import * as React from 'react';
@@ -11,41 +9,22 @@ import Geolocation from 'react-native-geolocation-service';
 import Toast from 'react-native-simple-toast';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {getLocationUpdates, getLocation} from '../../functions/location';
-import {networkStatusListener} from '../../functions/network.js';
-import {uploadGPS} from '../../functions/database.js';
-import {viewStyles, textStyles} from './styles.js';
-import {ErrorMsg} from '../../components/ErrorMsg/index.js';
-import {SideDrawer} from '../../components/SideDrawer/index.js';
-import {Profile} from '../../components/Profile/index.js';
-import {HideInteraction} from '../../components/hideInteraction.js';
+import {networkStatusListener} from '../../functions/network';
+import {uploadGPS} from '../../functions/database';
+import {viewStyles, textStyles} from './styles';
+import {ErrorMsg} from '../../components/ErrorMsg/index';
+import {SideDrawer} from '../../components/SideDrawer/index';
+import {Profile} from '../../components/Profile/index';
+import {HideInteraction} from '../../components/hideInteraction';
 import UserLogo from '../../assets/user.svg';
-import {AppContext} from '../../context/store.js';
+import {AppContext} from '../../context/store';
 
-// Import types
-import type {
-  NavigationScreenProp,
-  NavigationRoute,
-} from 'react-navigation-stack';
-import type {Node} from 'react';
+// import types
+import {StackScreenProps} from '@react-navigation/stack';
+import {GeoPosition} from 'react-native-geolocation-service';
+import {Region} from 'react-native-maps';
 
-// Define types (use exact types as much as possible)
-// Type for the props acquired from the center store
-type StatePropsT = {||};
-
-// Type for the props passed to UserSelectScreen from its parent, if applicable
-type OwnPropsT = {|
-  navigation: NavigationScreenProp<NavigationRoute>,
-|};
-
-// Type for the props mapped to dispatch
-type DispatchToPropsT = {||};
-
-// Type for ALL props
-type PropsT = {|
-  ...OwnPropsT,
-  ...StatePropsT,
-  ...DispatchToPropsT,
-|};
+type PropsT = StackScreenProps<NavigationT.RootStackT, 'GPS'>;
 
 /**
 GPSScreen
@@ -53,20 +32,20 @@ GPSScreen
 This is the screen that shows the Google Map, allows user to capture and record
 GPS, and offer a few configurations.
  */
-export const GPSScreen = (props: PropsT): Node => {
-  const [observing, setObserving] = React.useState(false);
-  const [recording, setRecording] = React.useState(false); // record all GPS data in one session
-  const [location, setLocation] = React.useState(null); // record current GPS data
-  const [region, setRegion] = React.useState(null); // record current map view region
-  const [error, setError] = React.useState('');
-  const [hasInternet, setHasInternet] = React.useState(true);
-  const [nonSlideOpen, setNonSlideOpen] = React.useState(false);
+export const GPSScreen: React.FC<PropsT> = _ => {
+  const [observing, setObserving] = React.useState<boolean>(false);
+  const [recording, setRecording] = React.useState<boolean>(false); // record all GPS data in one session
+  const [location, setLocation] = React.useState<GeoPosition | null>(null); // record current GPS data
+  const [region, setRegion] = React.useState<Region | null>(null); // record current map view region
+  const [error, setError] = React.useState<string>('');
+  const [hasInternet, setHasInternet] = React.useState<boolean>(true);
+  const [nonSlideOpen, setNonSlideOpen] = React.useState<boolean>(false);
   const {highAccuracy, forceLocation, locationDialog, gpsInterval, mapType} =
     React.useContext(AppContext);
 
   const watchId = React.useRef(null);
-  const records = React.useRef([]);
-  const mapRef = React.useRef(null);
+  const records = React.useRef<Array<GeoPosition>>([]);
+  const mapRef = React.useRef<MapView>(null);
 
   // The actions to perform when recording ends.
   const stopRecording = React.useCallback(() => {

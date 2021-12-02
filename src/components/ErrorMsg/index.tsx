@@ -2,39 +2,21 @@
  * Route from the selected parking to selected building
  *
  * @format
- * @flow
  */
 
 import * as React from 'react';
 import {View, Text} from 'react-native';
-import {viewStyles, textStyles} from './styles.js';
+import {viewStyles, textStyles} from './styles';
 
-// Import types
-import type {Node} from 'react';
-
-// Define types (use exact types as much as possible)
-// Type for the props acquired from the center store
-type StatePropsT = {||};
-
-// Type for the props passed to UserSelectScreen from its parent, if applicable
-type OwnPropsT = {|
-  msg: string,
-|};
-
-// Type for the props mapped to dispatch
-type DispatchToPropsT = {||};
-
-// Type for ALL props
-type PropsT = {|
-  ...OwnPropsT,
-  ...StatePropsT,
-  ...DispatchToPropsT,
-|};
+// types
+interface PropsT {
+  msg: string;
+}
 
 /**
 A component to produce error message
  */
-export const ErrorMsg = (props: PropsT): Node => {
+export const ErrorMsg: React.FC<PropsT> = props => {
   const {msg} = props;
   return (
     <View style={viewStyles.container} testID="errorMsg">
@@ -46,7 +28,7 @@ export const ErrorMsg = (props: PropsT): Node => {
 /**
 A componenent to produce success message
  */
-export const SuccessMsg = (props: PropsT): Node => {
+export const SuccessMsg: React.FC<PropsT> = props => {
   const {msg} = props;
   return (
     <View

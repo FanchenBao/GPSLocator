@@ -1,16 +1,10 @@
 /**
- * @flow
+ * @format
  */
 
-import {StyleSheet} from 'react-native';
+import {StyleSheet, ViewStyle, TextStyle} from 'react-native';
 
-// Import types
-import type {
-  ViewStyleProp,
-  TextStyleProp,
-} from 'react-native/Libraries/StyleSheet/StyleSheet';
-
-export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
+export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
   container: {
     flex: 1,
     alignItems: 'center',
@@ -107,7 +101,7 @@ export const viewStyles: {[string]: ViewStyleProp} = StyleSheet.create({
   },
 });
 
-export const textStyles: {[string]: TextStyleProp} = StyleSheet.create({
+export const textStyles = StyleSheet.create<{[k: string]: TextStyle}>({
   headerText: {
     fontSize: 30,
     fontWeight: 'bold',

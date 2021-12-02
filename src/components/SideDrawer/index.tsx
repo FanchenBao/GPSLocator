@@ -8,42 +8,23 @@
 
 import * as React from 'react';
 import {Animated, Dimensions, PanResponder} from 'react-native';
-import {styles} from './styles.js';
+import {styles} from './styles';
 
-// Import types
-import type {Node} from 'react';
-
-// Define types (use exact types as much as possible)
-// Type for the props acquired from the center store
-type StatePropsT = {||};
-
-// Type for the props passed from its parent, if applicable
-type OwnPropsT = {|
-  children?: Node,
-  peekWidthPct: number, // width of the peek state as percentage of total width
-  openWidthPct: number, // width of the open state as percentage of total width
-  maxWidthPct: number, // maximum pct of width allowed for a user to drag the drawer.
-  expandable?: boolean, // whether the drawer is expandable. If set to false, the drawer cannot expand beyond the peek state
-  nonSlideOpen?: boolean, // a flag indicating whether the drawer should open without user sliding. Useful when the drawer needs to be opened programmatically. Default to false.
-  onDrawerOpen?: () => void, // callback when the drawer is in open state.
-  onDrawerPeek?: () => void, // callback when the drawer is in peek state.
-|};
-
-// Type for the props mapped to dispatch
-type DispatchToPropsT = {||};
-
-// Type for ALL props
-type PropsT = {|
-  ...OwnPropsT,
-  ...StatePropsT,
-  ...DispatchToPropsT,
-|};
+interface PropsT {
+  peekWidthPct: number; // width of the peek state as percentage of total width
+  openWidthPct: number; // width of the open state as percentage of total width
+  maxWidthPct: number; // maximum pct of width allowed for a user to drag the drawer.
+  expandable?: boolean; // whether the drawer is expandable. If set to false, the drawer cannot expand beyond the peek state
+  nonSlideOpen?: boolean; // a flag indicating whether the drawer should open without user sliding. Useful when the drawer needs to be opened programmatically. Default to false.
+  onDrawerOpen?: () => void; // callback when the drawer is in open state.
+  onDrawerPeek?: () => void; // callback when the drawer is in peek state.
+}
 
 /**
 	Function component of SideDrawer
 	Inspired by: https://dev.to/johannawad/creating-a-swipe-up-bottom-drawer-in-react-native-no-external-libraries-3ng1
  */
-export const SideDrawer = (props: PropsT): Node => {
+export const SideDrawer: React.FC<PropsT> = props => {
   const {
     children,
     peekWidthPct,
@@ -51,8 +32,12 @@ export const SideDrawer = (props: PropsT): Node => {
     maxWidthPct,
     expandable = true,
     nonSlideOpen = false,
-    onDrawerOpen = () => {},
-    onDrawerPeek = () => {},
+    onDrawerOpen = () => {
+      // placeholder function
+    },
+    onDrawerPeek = () => {
+      // placeholder function
+    },
   } = props;
 
   const {width} = Dimensions.get('window');
@@ -136,7 +121,7 @@ export const SideDrawer = (props: PropsT): Node => {
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, {dx}) =>
         expandable && Math.abs(dx) >= 10, // enable pan only if there is sufficient finger movement
-      onPanResponderGrant: (event, {dx}) => {
+      onPanResponderGrant: _ => {
         // NOTE: It is paramount that we use extractOffset() instead of
         // setOffset(deltaX._value), because setOffset(deltaX._value) retains
         // the original value, which essentially changes the overall output
@@ -146,9 +131,11 @@ export const SideDrawer = (props: PropsT): Node => {
       },
       onPanResponderMove: (event, {dx}) => {
         // prevent user from moving the drawer too much
+        // @ts-ignore: state._value is a private value not exposed for use
         deltaX.setValue(Math.max(dx, state._value - width * maxWidthPct));
       },
       onPanResponderRelease: (event, {dx}) => {
+        // @ts-ignore: state._value is a private value not exposed for use
         animate(getNextState(state._value, dx));
       },
     }),
@@ -156,8 +143,10 @@ export const SideDrawer = (props: PropsT): Node => {
 
   // Perform non-slide open or close of the drawer
   React.useEffect(() => {
+    // @ts-ignore: state._value is a private value not exposed for use
     if (state._value === DrawerState.Peek && nonSlideOpen) {
       animate(DrawerState.Open);
+      // @ts-ignore: state._value is a private value not exposed for use
     } else if (state._value === DrawerState.Open && !nonSlideOpen) {
       animate(DrawerState.Peek);
     }

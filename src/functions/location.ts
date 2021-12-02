@@ -1,16 +1,15 @@
 /**
  *
  * @format
- * @flow
  */
 
 import {Alert} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import {hasLocationPermission} from './permission.js';
+import {hasLocationPermission} from './permission';
 import appConfig from '../../app.json';
 
 // Import Types
-import type {GeoPosition} from 'react-native-geolocation-service';
+import {GeoPosition} from 'react-native-geolocation-service';
 
 /**
 Get the current GPS location. If error, show the error message as an alert.
@@ -23,7 +22,7 @@ Get the current GPS location. If error, show the error message as an alert.
 @return None.
  */
 export const getLocation = async (
-  onLocationObtained: (?GeoPosition) => void,
+  onLocationObtained: (arg: GeoPosition | null) => void,
   highAccuracy: boolean,
   forceLocation: boolean,
   locationDialog: boolean,
@@ -71,8 +70,8 @@ as a GPS location service that constantly upates the GPS data.
 @return None.
  */
 export const getLocationUpdates = async (
-  onLocationUpdatesEnabled: boolean => void,
-  onLocationObtained: (?GeoPosition) => void,
+  onLocationUpdatesEnabled: (arg: boolean) => void,
+  onLocationObtained: (arg: GeoPosition | null) => void,
   watchId: {current: null | number},
   gpsInterval: number,
   highAccuracy: boolean,

@@ -4,6 +4,7 @@
  *
  * @format
  */
+const {getDefaultConfig} = require('metro-config');
 
 module.exports = {
   transformer: {
@@ -15,8 +16,6 @@ module.exports = {
     }),
   },
 };
-
-const {getDefaultConfig} = require('metro-config');
 
 module.exports = (async () => {
   const {

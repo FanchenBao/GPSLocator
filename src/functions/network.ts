@@ -1,5 +1,5 @@
 /**
- * @flow
+ * @format
  */
 import NetInfo from '@react-native-community/netinfo';
 
@@ -17,13 +17,15 @@ back, the listener cancels the error message about network error.
   the Internet is lost. Default to a no action function.
  */
 export const networkStatusListener = (
-  setHasInternet: boolean => void,
-  setError: string => void,
+  setHasInternet: (arg: boolean) => void,
+  setError: (err: string) => void,
   error: string,
-  uponInternetLossExtraAction: any => void = () => {},
+  uponInternetLossExtraAction: () => void = () => {
+    // Default function is a no op.
+  },
 ): (() => void) =>
   NetInfo.addEventListener(state => {
-    setHasInternet(state.isInternetReachable);
+    setHasInternet(Boolean(state.isInternetReachable));
     if (!state.isInternetReachable) {
       setError('Network Error. Please try again later');
       uponInternetLossExtraAction();

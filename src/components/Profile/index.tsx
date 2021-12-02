@@ -1,8 +1,6 @@
-/* eslint-disable react-native/no-inline-styles */
 /**
  *
  * @format
- * @flow
  */
 
 import * as React from 'react';
@@ -16,32 +14,16 @@ import {
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import Slider from '@react-native-community/slider';
-import {AppContext} from '../../context/store.js';
+import {AppContext} from '../../context/store';
 import {viewStyles, textStyles} from './styles';
 
-// Import types
-import type {Node} from 'react';
+// Types
+import {MapTypes} from 'react-native-maps';
+interface PropsT {
+  widthPct: number; // pct of total width that this component occupies. This must agree with the side drawer open state.
+}
 
-// Define types (use exact types as much as possible)
-// Type for the props acquired from the center store
-type StatePropsT = {||};
-
-// Type for the props passed from its parent, if applicable
-type OwnPropsT = {|
-  widthPct: number, // pct of total width that this component occupies. This must agree with the side drawer open state.
-|};
-
-// Type for the props mapped to dispatch
-type DispatchToPropsT = {||};
-
-// Type for ALL props
-type PropsT = {|
-  ...OwnPropsT,
-  ...StatePropsT,
-  ...DispatchToPropsT,
-|};
-
-export const Profile = (props: PropsT): Node => {
+export const Profile: React.FC<PropsT> = props => {
   const {widthPct} = props;
   const {
     highAccuracy,
@@ -134,7 +116,7 @@ export const Profile = (props: PropsT): Node => {
                 backgroundColor: mapType === mt ? '#2196F3' : 'lightgrey',
               },
             ]}
-            onPress={() => setMapType(mt)}>
+            onPress={() => setMapType(mt as MapTypes)}>
             <Text
               style={[
                 textStyles.buttonText,

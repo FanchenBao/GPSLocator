@@ -1,42 +1,20 @@
 /**
  *
  * @format
- * @flow
  */
 
 import * as React from 'react';
 import {Text, View, TextInput, TouchableOpacity, Keyboard} from 'react-native';
 import {viewStyles, textStyles} from './styles';
-import {ErrorMsg} from '../../components/ErrorMsg/index.js';
-import {HideInteraction} from '../../components/hideInteraction.js';
-import {networkStatusListener} from '../../functions/network.js';
+import {ErrorMsg} from '../../components/ErrorMsg/index';
+import {HideInteraction} from '../../components/hideInteraction';
+import {networkStatusListener} from '../../functions/network';
 import auth from '@react-native-firebase/auth';
 
 // import types
-import type {
-  NavigationScreenProp,
-  NavigationRoute,
-} from 'react-navigation-stack';
-import type {Node} from 'react';
+import {StackScreenProps} from '@react-navigation/stack';
 
-// Define types (use exact types as much as possible)
-// Type for the props acquired from the center store
-type StatePropsT = {||};
-
-// Type for the props passed to UserSelectScreen from its parent, if applicable
-type OwnPropsT = {|
-  navigation: NavigationScreenProp<NavigationRoute>,
-|};
-
-// Type for the props mapped to dispatch
-type DispatchToPropsT = {||};
-
-// Type for ALL props
-type PropsT = {|
-  ...OwnPropsT,
-  ...StatePropsT,
-  ...DispatchToPropsT,
-|};
+type PropsT = StackScreenProps<NavigationT.RootStackT, 'LogIn'>;
 
 /**
   Home screen.
@@ -45,7 +23,7 @@ type PropsT = {|
   reason for log in is to that Firestore does not allow write permission unless
   a user has been authenticated. Thus, login is necessary.
  */
-export const HomeScreen = (props: PropsT): Node => {
+export const HomeScreen: React.FC<PropsT> = _ => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState('');
@@ -63,7 +41,8 @@ export const HomeScreen = (props: PropsT): Node => {
       setError('');
       await auth().signInWithEmailAndPassword(email, password);
     } catch (signInError) {
-      switch (signInError.code) {
+      const err = signInError as FirebaseT.NativeFirebaseErrorT;
+      switch (err.code) {
         case 'auth/wrong-password':
         case 'auth/user-not-found':
           setError('Email or password is wrong');
@@ -74,7 +53,7 @@ export const HomeScreen = (props: PropsT): Node => {
           );
           break;
         default:
-          console.log(signInError);
+          console.log(err);
           setError('Internal error!');
       }
     }

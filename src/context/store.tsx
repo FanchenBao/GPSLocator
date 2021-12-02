@@ -1,39 +1,39 @@
 /**
  *
  * @format
- * @flow
  */
 
 import * as React from 'react';
-import {reducer} from './reducer.js';
-import {actions} from './actions.js';
+import {reducer} from './reducer';
+import {actions} from './actions';
+import {MapTypes} from 'react-native-maps';
 
-// Import types
-import type {Node} from 'react';
-export type StateT = {
-  highAccuracy: boolean,
-  forceLocation: boolean,
-  locationDialog: boolean,
-  gpsInterval: number,
-  mapType: string,
-};
-
-const initialState: StateT = {
+const initialState: ContextT.StateT = {
   highAccuracy: true,
   forceLocation: true,
   locationDialog: true,
   gpsInterval: 100, // millisecond unit. 1000 millisecond = 1 second
   mapType: 'satellite',
+  setHighAccuracy: () => {
+    // Placeholder for the set function, which will be defined in Provider
+  },
+  setForceLocation: () => {
+    // Placeholder for the set function, which will be defined in Provider
+  },
+  setLocationDialog: () => {
+    // Placeholder for the set function, which will be defined in Provider
+  },
+  setGPSInterval: () => {
+    // Placeholder for the set function, which will be defined in Provider
+  },
+  setMapType: () => {
+    // Placeholder for the set function, which will be defined in Provider
+  },
 };
 
-type PropsT = {
-  children?: Node,
-};
+export const AppContext = React.createContext<ContextT.StateT>(initialState);
 
-export const AppContext: Object = React.createContext();
-
-export const Provider = (props: PropsT): Node => {
-  const {children} = props;
+export const Provider: React.FC = ({children}) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   const value = {
@@ -54,7 +54,7 @@ export const Provider = (props: PropsT): Node => {
     setGPSInterval: (val: number) => {
       dispatch({type: actions.SET_GPS_INTERVAL, gpsInterval: val});
     },
-    setMapType: (val: string) => {
+    setMapType: (val: MapTypes) => {
       dispatch({type: actions.SET_MAP_TYPE, mapType: val});
     },
   };

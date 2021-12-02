@@ -1,20 +1,14 @@
 /**
-@flow
+ * @format
  */
 
 import * as React from 'react';
 import {TouchableWithoutFeedback} from 'react-native';
 
-// Import types
-import type {Node} from 'react';
-
 type PropsT = {
-  // The actual component of the screen which is to be wrapped by
-  // HideInteraction
-  children?: Node,
   // Action to perform when any part of the HideInteraction is pressed. Write
   // the logic of hiding interaction in this callback.
-  onPress: () => void,
+  onPress: () => void;
 };
 
 /**
@@ -24,7 +18,7 @@ type PropsT = {
 
   Reference: https://reactnativecode.com/react-native-hide-dismiss-keyboard/
  */
-export const HideInteraction = (props: PropsT): Node => {
+export const HideInteraction: React.FC<PropsT> = props => {
   const {children, onPress} = props;
   return (
     <TouchableWithoutFeedback onPress={() => onPress()}>

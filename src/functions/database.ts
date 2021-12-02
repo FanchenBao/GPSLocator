@@ -1,14 +1,13 @@
 /**
  *
  * @format
- * @flow
  */
 
 import firestore from '@react-native-firebase/firestore';
 import {format} from 'date-fns';
 
 // Import Types
-import type {GeoPosition} from 'react-native-geolocation-service';
+import {GeoPosition} from 'react-native-geolocation-service';
 
 /**
 Upload recorded GPS data to firestore.

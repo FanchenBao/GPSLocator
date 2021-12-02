@@ -1,7 +1,6 @@
 /**
  *
  * @format
- * @flow
  */
 import {
   Alert,
@@ -45,7 +44,12 @@ const hasPermissionIOS = async (): Promise<boolean> => {
             });
           },
         },
-        {text: "Don't Use Location", onPress: () => {}},
+        {
+          text: "Don't Use Location",
+          onPress: () => {
+            // place holder function
+          },
+        },
       ],
     );
   }
