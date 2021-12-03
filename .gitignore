@@ -92,6 +92,9 @@ android/**/.classpath
 
 *.log
 
+# java heap profiling file
+**/*.hprof
+
 # git secret related
 .gitsecret/keys/random_seed
 !*.secret
