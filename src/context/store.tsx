@@ -16,6 +16,7 @@ const initialState: ContextT.StateT = {
   mapType: 'satellite',
   emitters: {},
   error: '',
+  hasInternet: true,
   setHighAccuracy: () => {
     // Placeholder for the set function, which will be defined in Provider
   },
@@ -35,6 +36,9 @@ const initialState: ContextT.StateT = {
     // Placeholder for the set function, which will be defined in Provider
   },
   setError: () => {
+    // Placeholder for the set function, which will be defined in Provider
+  },
+  setHasInternet: () => {
     // Placeholder for the set function, which will be defined in Provider
   },
 };
@@ -69,6 +73,9 @@ export const Provider: React.FC = ({children}) => {
     ),
     setError: React.useCallback((val: string) => {
       dispatch({type: actions.SET_ERROR, error: val});
+    }, []),
+    setHasInternet: React.useCallback((val: boolean) => {
+      dispatch({type: actions.SET_HAS_INTERNET, hasInternet: val});
     }, []),
   };
 

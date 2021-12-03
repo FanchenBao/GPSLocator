@@ -11,6 +11,7 @@ declare namespace ContextT {
     mapType: import('react-native-maps').MapTypes;
     emitters: {[emitterId: string]: FirestoreT.EmitterT};
     error: string;
+    hasInternet: boolean;
     setHighAccuracy: (val: boolean) => void;
     setForceLocation: (val: boolean) => void;
     setLocationDialog: (val: boolean) => void;
@@ -18,6 +19,7 @@ declare namespace ContextT {
     setMapType: (val: import('react-native-maps').MapTypes) => void;
     setEmitters: (val: {[emitterId: string]: FirestoreT.EmitterT}) => void;
     setError: (val: string) => void;
+    setHasInternet: (val: boolean) => void;
   }
 
   interface SetHighAccuracyActionT {
@@ -48,6 +50,10 @@ declare namespace ContextT {
     type: string;
     error: string;
   }
+  interface SetHasInternetActionT {
+    type: string;
+    hasInternet: boolean;
+  }
   type ActionT =
     | SetHighAccuracyActionT
     | SetForceLocationActionT
@@ -55,5 +61,6 @@ declare namespace ContextT {
     | SetGPSIntervalActionT
     | SetMapTypeActionT
     | SetEmittersActionT
-    | SetErrorActionT;
+    | SetErrorActionT
+    | SetHasInternetActionT;
 }

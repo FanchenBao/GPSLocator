@@ -14,6 +14,8 @@ import {GPSScreen} from './src/screens/GPSScreen/index';
 import auth from '@react-native-firebase/auth';
 import {AppContext} from './src/context/store';
 import {getEmitters} from './src/functions/database';
+import {ErrorModal} from './src/errors/ErrorModal';
+import {networkStatusListener} from './src/functions/network';
 
 const Stack = createStackNavigator<NavigationT.RootStackT>();
 
@@ -23,7 +25,8 @@ const App: React.FC = () => {
   const [user, setUser] = React.useState<FirebaseT.UserT>();
 
   // Context
-  const {emitters, setEmitters, error, setError} = React.useContext(AppContext);
+  const {emitters, setEmitters, error, setError, setHasInternet} =
+    React.useContext(AppContext);
 
   // Handle user state changes
   const onAuthStateChanged = (currentUser: FirebaseT.UserT) => {
@@ -38,6 +41,7 @@ const App: React.FC = () => {
     return subscriber; // unsubscribe on unmount
   });
 
+  // Download info of all emitters
   React.useEffect(() => {
     // console.log('getEmitters called');
     getEmitters()
@@ -50,32 +54,40 @@ const App: React.FC = () => {
       });
   }, [setEmitters, setError]);
 
-  console.log(new Date(), emitters);
+  // Check internet connection
+  React.useEffect(() => {
+    const subscriber = networkStatusListener(setHasInternet, setError, error);
+    return subscriber;
+  }, [error, setError, setHasInternet]);
+
   return (
-    <>
-      <SafeAreaView style={{flex: 1}}>
-        <NavigationContainer>
-          <Stack.Navigator
-            screenOptions={{
-              headerShown: false,
-            }}>
-            {user ? ( // Follow best practice: https://reactnavigation.org/docs/auth-flow
-              <>
-                <Stack.Screen
-                  name="GPS"
-                  options={{gestureEnabled: false}}
-                  component={GPSScreen}
-                />
-              </>
-            ) : (
-              <>
-                <Stack.Screen name="LogIn" component={HomeScreen} />
-              </>
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
-      </SafeAreaView>
-    </>
+    <SafeAreaView style={{flex: 1}}>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}>
+          {user ? ( // Follow best practice: https://reactnavigation.org/docs/auth-flow
+            <>
+              <Stack.Screen
+                name="GPS"
+                options={{gestureEnabled: false}}
+                component={GPSScreen}
+              />
+            </>
+          ) : (
+            <>
+              <Stack.Screen name="LogIn" component={HomeScreen} />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+      <ErrorModal
+        msg={error}
+        onOkPress={() => setError('')}
+        visible={error !== ''}
+      />
+    </SafeAreaView>
   );
 };
 

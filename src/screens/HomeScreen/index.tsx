@@ -6,10 +6,9 @@
 import * as React from 'react';
 import {Text, View, TextInput, TouchableOpacity, Keyboard} from 'react-native';
 import {viewStyles, textStyles} from './styles';
-import {ErrorMsg} from '../../components/ErrorMsg/index';
 import {HideInteraction} from '../../components/hideInteraction';
-import {networkStatusListener} from '../../functions/network';
 import auth from '@react-native-firebase/auth';
+import {AppContext} from '../../context/store';
 
 // import types
 import {StackScreenProps} from '@react-navigation/stack';
@@ -26,8 +25,7 @@ type PropsT = StackScreenProps<NavigationT.RootStackT, 'LogIn'>;
 export const HomeScreen: React.FC<PropsT> = _ => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [error, setError] = React.useState('');
-  const [hasInternet, setHasInternet] = React.useState(true);
+  const {hasInternet, setError} = React.useContext(AppContext);
 
   const onPress = async () => {
     if (!hasInternet) {
@@ -59,12 +57,6 @@ export const HomeScreen: React.FC<PropsT> = _ => {
     }
   };
 
-  // Hook
-  React.useEffect(() => {
-    const subscriber = networkStatusListener(setHasInternet, setError, error);
-    return subscriber;
-  }, [error]);
-
   return (
     <HideInteraction onPress={() => Keyboard.dismiss()}>
       <View style={viewStyles.container}>
@@ -73,7 +65,6 @@ export const HomeScreen: React.FC<PropsT> = _ => {
         </View>
 
         <View style={viewStyles.content}>
-          <View style={viewStyles.dummyContent} />
           <View style={viewStyles.inputTextContainer}>
             <TextInput
               style={textStyles.textInput}
@@ -105,9 +96,6 @@ export const HomeScreen: React.FC<PropsT> = _ => {
               />
             </View>
           </View>
-          <View style={viewStyles.msgContainer}>
-            {error !== '' ? <ErrorMsg msg={error} /> : null}
-          </View>
         </View>
 
         <View style={viewStyles.interaction}>
@@ -118,7 +106,6 @@ export const HomeScreen: React.FC<PropsT> = _ => {
               <Text style={textStyles.loginButtonText}>Log In</Text>
             </TouchableOpacity>
           </View>
-          <View style={viewStyles.dummyInteraction} />
         </View>
       </View>
     </HideInteraction>

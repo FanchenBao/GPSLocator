@@ -12,7 +12,6 @@ import {getLocationUpdates, getLocation} from '../../functions/location';
 import {networkStatusListener} from '../../functions/network';
 import {uploadGPS} from '../../functions/database';
 import {viewStyles, textStyles} from './styles';
-import {ErrorMsg} from '../../components/ErrorMsg/index';
 import {SideDrawer} from '../../components/SideDrawer/index';
 import {Profile} from '../../components/Profile/index';
 import {HideInteraction} from '../../components/hideInteraction';
@@ -37,11 +36,16 @@ export const GPSScreen: React.FC<PropsT> = _ => {
   const [recording, setRecording] = React.useState<boolean>(false); // record all GPS data in one session
   const [location, setLocation] = React.useState<GeoPosition | null>(null); // record current GPS data
   const [region, setRegion] = React.useState<Region | null>(null); // record current map view region
-  const [error, setError] = React.useState<string>('');
-  const [hasInternet, setHasInternet] = React.useState<boolean>(true);
   const [nonSlideOpen, setNonSlideOpen] = React.useState<boolean>(false);
-  const {highAccuracy, forceLocation, locationDialog, gpsInterval, mapType} =
-    React.useContext(AppContext);
+  const {
+    highAccuracy,
+    forceLocation,
+    locationDialog,
+    gpsInterval,
+    mapType,
+    hasInternet,
+    setError,
+  } = React.useContext(AppContext);
 
   const watchId = React.useRef(null);
   const records = React.useRef<Array<GeoPosition>>([]);
@@ -59,7 +63,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         });
     }
     records.current = [];
-  }, []);
+  }, [setError]);
 
   // Check whether the current GPS location is within the boundary of the
   // screen. This makes use of the latitudeDelta and longitudeDelta. For a
@@ -112,21 +116,26 @@ export const GPSScreen: React.FC<PropsT> = _ => {
     }
   }, [location, recording]);
 
-  // Internet connection check. If internet is lost, display error message and
+  // Internet connection check. If internet is lost,
   // discard all recorded GPS data. This essentially forces a redo of the
-  // previous data collection.
+  // previous data collection. Note that we use dummy values for all error-
+  // related actions, because internet-loss error has already been handled
+  // in App.tsx.
   React.useEffect(() => {
     const subscriber = networkStatusListener(
-      setHasInternet,
-      setError,
-      error,
       () => {
-        setRecording(false);
+        // placeholder, no op
+      },
+      () => {
+        // placeholder, no op
+      },
+      '',
+      () => {
         records.current = [];
       },
     );
     return subscriber;
-  }, [error]);
+  }, []);
 
   // Obtain initial geolocation for Google Maps, and do this only once.
   React.useEffect(() => {
@@ -194,9 +203,6 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         onPress={() => setNonSlideOpen(true)}>
         <UserLogo width={30} height={30} />
       </TouchableOpacity>
-      <View style={viewStyles.msgContainer}>
-        {error !== '' ? <ErrorMsg msg={error} /> : null}
-      </View>
       <HideInteraction onPress={() => setNonSlideOpen(false)}>
         <View style={viewStyles.contentContainer}>
           <View style={viewStyles.buttonContainer}>

@@ -10,7 +10,7 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
     alignItems: 'center',
     paddingHorizontal: 24,
     backgroundColor: 'white',
-    // borderWidth: 2
+    // borderWidth: 2,
     // borderColor: 'blue',
   },
   header: {
@@ -20,48 +20,27 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
     // borderWidth: 2,
     // borderColor: 'green',
   },
-  logo: {
-    width: 167.74,
-    height: 38.57,
-  },
 
   content: {
     flex: 1,
+    justifyContent: 'center',
     alignSelf: 'stretch',
     // borderWidth: 2,
     // borderColor: 'purple',
   },
-  dummyContent: {
-    flex: 1.5,
-  },
   inputTextContainer: {
-    flex: 1,
     borderBottomColor: 'black',
     borderBottomWidth: 2,
     justifyContent: 'flex-end',
+    marginBottom: 10,
     // borderWidth: 2,
     // borderColor: 'blue',
   },
 
   passwordContainer: {
-    flex: 1.2,
-    flexDirection: 'row',
+    marginTop: 10,
     // borderWidth: 2,
     // borderColor: 'green',
-  },
-  eyeContainer: {
-    justifyContent: 'flex-end',
-    borderBottomColor: 'black',
-    borderBottomWidth: 2,
-  },
-  eye: {
-    paddingBottom: 7,
-  },
-  msgContainer: {
-    flex: 1.5,
-    paddingVertical: 10,
-    // borderWidth: 2,
-    // borderColor: 'blue',
   },
 
   interaction: {
@@ -95,9 +74,6 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
     alignItems: 'center',
     // borderWidth: 2,
     // borderColor: 'grey',
-  },
-  dummyInteraction: {
-    flex: 1.5,
   },
 });
 

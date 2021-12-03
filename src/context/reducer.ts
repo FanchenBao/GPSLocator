@@ -46,6 +46,11 @@ export const reducer = (
         ...state,
         error: (action as ContextT.SetErrorActionT).error,
       };
+    case actions.SET_HAS_INTERNET:
+      return {
+        ...state,
+        hasInternet: (action as ContextT.SetHasInternetActionT).hasInternet,
+      };
     default:
       return state;
   }
