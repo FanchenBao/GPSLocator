@@ -25,7 +25,7 @@ const App: React.FC = () => {
   const [user, setUser] = React.useState<FirebaseT.UserT>();
 
   // Context
-  const {emitters, setEmitters, error, setError, setHasInternet} =
+  const {setEmitters, error, setError, setHasInternet} =
     React.useContext(AppContext);
 
   // Handle user state changes

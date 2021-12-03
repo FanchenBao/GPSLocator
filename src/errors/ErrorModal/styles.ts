@@ -14,14 +14,17 @@ export const viewStyles = StyleSheet.create<{[name: string]: ViewStyle}>({
     padding: 15,
   },
   errorContainer: {
-    flexDirection: 'row',
     paddingBottom: 5,
   },
   errorTextContainer: {
     marginLeft: 5,
   },
   okContainer: {
-    alignItems: 'flex-end',
+    alignItems: 'center',
+    width: 40,
+    alignSelf: 'flex-end',
+    // borderWidth: 2,
+    // borderColor: 'blue',
   },
 });
 
@@ -30,8 +33,9 @@ export const textStyles = StyleSheet.create<{[name: string]: TextStyle}>({
     fontSize: 14,
     color: '#FF4D94',
   },
-  retryText: {
-    fontSize: 14,
+  okText: {
+    fontSize: 16,
+    fontWeight: 'bold',
     color: '#2196F3',
   },
 });

@@ -32,7 +32,7 @@ export const ErrorModal: React.FC<PropsT> = props => {
           </View>
         </View>
         <TouchableOpacity style={viewStyles.okContainer} onPress={onOkPress}>
-          <Text style={textStyles.retryText}>OK</Text>
+          <Text style={textStyles.okText}>OK</Text>
         </TouchableOpacity>
       </View>
     </DarkModalBase>

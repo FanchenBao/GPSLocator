@@ -39,16 +39,10 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
     // borderWidth: 2,
     // borderColor: 'red',
   },
-  gpsButton: {
+  button: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 120,
-    borderRadius: 15,
-  },
-  recordButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 120,
+    width: 80,
     borderRadius: 15,
   },
   resultContainer: {
@@ -91,7 +85,7 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
 
 export const textStyles = StyleSheet.create<{[k: string]: TextStyle}>({
   buttonText: {
-    fontSize: 18,
+    fontSize: 15,
     color: 'white',
   },
   link: {

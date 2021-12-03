@@ -17,6 +17,7 @@ import {Profile} from '../../components/Profile/index';
 import {HideInteraction} from '../../components/hideInteraction';
 import UserLogo from '../../assets/user.svg';
 import {AppContext} from '../../context/store';
+import {SelectEmitterModal} from '../../components/SelectEmitterModal';
 
 // import types
 import {StackScreenProps} from '@react-navigation/stack';
@@ -37,6 +38,8 @@ export const GPSScreen: React.FC<PropsT> = _ => {
   const [location, setLocation] = React.useState<GeoPosition | null>(null); // record current GPS data
   const [region, setRegion] = React.useState<Region | null>(null); // record current map view region
   const [nonSlideOpen, setNonSlideOpen] = React.useState<boolean>(false);
+  const [selectEmitterModalVisible, setSelectEmitterModalVisible] =
+    React.useState<boolean>(false);
   const {
     highAccuracy,
     forceLocation,
@@ -44,6 +47,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
     gpsInterval,
     mapType,
     hasInternet,
+    selectedEmitter,
     setError,
   } = React.useContext(AppContext);
 
@@ -207,6 +211,22 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         <View style={viewStyles.contentContainer}>
           <View style={viewStyles.buttonContainer}>
             <TouchableOpacity
+              onPress={() => setSelectEmitterModalVisible(true)}
+              style={[
+                viewStyles.button,
+                {
+                  borderWidth: 2,
+                  borderColor: 'black',
+                  width: 100,
+                },
+              ]}>
+              <Text style={[textStyles.buttonText, {color: 'black'}]}>
+                {selectedEmitter
+                  ? `Emitter-${selectedEmitter}`
+                  : 'Select Emitter'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => {
                 observing
                   ? removeLocationUpdates()
@@ -221,7 +241,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
                     );
               }}
               style={[
-                viewStyles.gpsButton,
+                viewStyles.button,
                 {backgroundColor: observing ? 'red' : '#2196F3'},
               ]}>
               <Text style={textStyles.buttonText}>
@@ -231,11 +251,20 @@ export const GPSScreen: React.FC<PropsT> = _ => {
             <TouchableOpacity
               onPress={
                 // only record if we are already observing GPS
-                () => (recording ? stopRecording() : setRecording(observing))
+                () => {
+                  if (!observing) {
+                    setError('Must start GPS before recording');
+                  } else if (!selectedEmitter) {
+                    setError('Must select an emitter before emitting');
+                  } else {
+                    recording ? stopRecording() : setRecording(observing);
+                  }
+                }
               }
               style={[
-                viewStyles.recordButton,
+                viewStyles.button,
                 {
+                  width: 130,
                   backgroundColor: hasInternet
                     ? recording
                       ? 'red'
@@ -245,7 +274,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
               ]}
               disabled={!hasInternet}>
               <Text style={textStyles.buttonText}>
-                {recording ? 'Stop Record' : 'Start Record'}
+                {recording ? 'Stop Record & Emit' : 'Start Record & Emit'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -271,6 +300,10 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         onDrawerPeek={() => setNonSlideOpen(false)}>
         <Profile widthPct={0.7} />
       </SideDrawer>
+      <SelectEmitterModal
+        visible={selectEmitterModalVisible}
+        onCancelPress={() => setSelectEmitterModalVisible(false)}
+      />
     </View>
   );
 };

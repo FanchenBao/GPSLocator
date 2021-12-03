@@ -12,6 +12,7 @@ declare namespace ContextT {
     emitters: {[emitterId: string]: FirestoreT.EmitterT};
     error: string;
     hasInternet: boolean;
+    selectedEmitter: string;
     setHighAccuracy: (val: boolean) => void;
     setForceLocation: (val: boolean) => void;
     setLocationDialog: (val: boolean) => void;
@@ -20,6 +21,7 @@ declare namespace ContextT {
     setEmitters: (val: {[emitterId: string]: FirestoreT.EmitterT}) => void;
     setError: (val: string) => void;
     setHasInternet: (val: boolean) => void;
+    setSelectedEmitter: (val: string) => void;
   }
 
   interface SetHighAccuracyActionT {
@@ -54,6 +56,10 @@ declare namespace ContextT {
     type: string;
     hasInternet: boolean;
   }
+  interface SetSelectedEmitterActionT {
+    type: string;
+    selectedEmitter: string;
+  }
   type ActionT =
     | SetHighAccuracyActionT
     | SetForceLocationActionT
@@ -62,5 +68,6 @@ declare namespace ContextT {
     | SetMapTypeActionT
     | SetEmittersActionT
     | SetErrorActionT
-    | SetHasInternetActionT;
+    | SetHasInternetActionT
+    | SetSelectedEmitterActionT;
 }

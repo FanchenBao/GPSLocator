@@ -51,6 +51,12 @@ export const reducer = (
         ...state,
         hasInternet: (action as ContextT.SetHasInternetActionT).hasInternet,
       };
+    case actions.SET_SELECTED_EMITTER:
+      return {
+        ...state,
+        selectedEmitter: (action as ContextT.SetSelectedEmitterActionT)
+          .selectedEmitter,
+      };
     default:
       return state;
   }

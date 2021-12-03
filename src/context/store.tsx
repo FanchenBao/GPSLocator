@@ -17,6 +17,7 @@ const initialState: ContextT.StateT = {
   emitters: {},
   error: '',
   hasInternet: true,
+  selectedEmitter: '',
   setHighAccuracy: () => {
     // Placeholder for the set function, which will be defined in Provider
   },
@@ -39,6 +40,9 @@ const initialState: ContextT.StateT = {
     // Placeholder for the set function, which will be defined in Provider
   },
   setHasInternet: () => {
+    // Placeholder for the set function, which will be defined in Provider
+  },
+  setSelectedEmitter: () => {
     // Placeholder for the set function, which will be defined in Provider
   },
 };
@@ -76,6 +80,9 @@ export const Provider: React.FC = ({children}) => {
     }, []),
     setHasInternet: React.useCallback((val: boolean) => {
       dispatch({type: actions.SET_HAS_INTERNET, hasInternet: val});
+    }, []),
+    setSelectedEmitter: React.useCallback((val: string) => {
+      dispatch({type: actions.SET_SELECTED_EMITTER, selectedEmitter: val});
     }, []),
   };
 
