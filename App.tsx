@@ -11,8 +11,9 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {HomeScreen} from './src/screens/HomeScreen/index';
 import {GPSScreen} from './src/screens/GPSScreen/index';
-import {Provider} from './src/context/store';
 import auth from '@react-native-firebase/auth';
+import {AppContext} from './src/context/store';
+import {getEmitters} from './src/functions/database';
 
 const Stack = createStackNavigator<NavigationT.RootStackT>();
 
@@ -20,6 +21,9 @@ const App: React.FC = () => {
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = React.useState<boolean>(true);
   const [user, setUser] = React.useState<FirebaseT.UserT>();
+
+  // Context
+  const {emitters, setEmitters, error, setError} = React.useContext(AppContext);
 
   // Handle user state changes
   const onAuthStateChanged = (currentUser: FirebaseT.UserT) => {
@@ -33,8 +37,22 @@ const App: React.FC = () => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   });
+
+  React.useEffect(() => {
+    // console.log('getEmitters called');
+    getEmitters()
+      .then(emittersObj => {
+        setEmitters(emittersObj);
+      })
+      .catch(e => {
+        console.log(e);
+        setError('Getting emitter list failed.');
+      });
+  }, [setEmitters, setError]);
+
+  console.log(new Date(), emitters);
   return (
-    <Provider>
+    <>
       <SafeAreaView style={{flex: 1}}>
         <NavigationContainer>
           <Stack.Navigator
@@ -57,7 +75,7 @@ const App: React.FC = () => {
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>
-    </Provider>
+    </>
   );
 };
 

@@ -14,6 +14,8 @@ const initialState: ContextT.StateT = {
   locationDialog: true,
   gpsInterval: 100, // millisecond unit. 1000 millisecond = 1 second
   mapType: 'satellite',
+  emitters: {},
+  error: '',
   setHighAccuracy: () => {
     // Placeholder for the set function, which will be defined in Provider
   },
@@ -29,6 +31,12 @@ const initialState: ContextT.StateT = {
   setMapType: () => {
     // Placeholder for the set function, which will be defined in Provider
   },
+  setEmitters: () => {
+    // Placeholder for the set function, which will be defined in Provider
+  },
+  setError: () => {
+    // Placeholder for the set function, which will be defined in Provider
+  },
 };
 
 export const AppContext = React.createContext<ContextT.StateT>(initialState);
@@ -37,26 +45,31 @@ export const Provider: React.FC = ({children}) => {
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   const value = {
-    highAccuracy: state.highAccuracy,
-    forceLocation: state.forceLocation,
-    locationDialog: state.locationDialog,
-    gpsInterval: state.gpsInterval,
-    mapType: state.mapType,
-    setHighAccuracy: (val: boolean) => {
+    ...state,
+    setHighAccuracy: React.useCallback((val: boolean) => {
       dispatch({type: actions.SET_HIGH_ACCURACY, highAccuracy: val});
-    },
-    setForceLocation: (val: boolean) => {
+    }, []),
+    setForceLocation: React.useCallback((val: boolean) => {
       dispatch({type: actions.SET_FORCE_LOCATION, forceLocation: val});
-    },
-    setLocationDialog: (val: boolean) => {
+    }, []),
+    setLocationDialog: React.useCallback((val: boolean) => {
       dispatch({type: actions.SET_LOCATION_DIALOG, locationDialog: val});
-    },
-    setGPSInterval: (val: number) => {
+    }, []),
+    setGPSInterval: React.useCallback((val: number) => {
       dispatch({type: actions.SET_GPS_INTERVAL, gpsInterval: val});
-    },
-    setMapType: (val: MapTypes) => {
+    }, []),
+    setMapType: React.useCallback((val: MapTypes) => {
       dispatch({type: actions.SET_MAP_TYPE, mapType: val});
-    },
+    }, []),
+    setEmitters: React.useCallback(
+      (val: {[emitterId: string]: FirestoreT.EmitterT}) => {
+        dispatch({type: actions.SET_EMITTERS, emitters: val});
+      },
+      [],
+    ),
+    setError: React.useCallback((val: string) => {
+      dispatch({type: actions.SET_ERROR, error: val});
+    }, []),
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -36,6 +36,16 @@ export const reducer = (
         ...state,
         mapType: (action as ContextT.SetMapTypeActionT).mapType,
       };
+    case actions.SET_EMITTERS:
+      return {
+        ...state,
+        emitters: (action as ContextT.SetEmittersActionT).emitters,
+      };
+    case actions.SET_ERROR:
+      return {
+        ...state,
+        error: (action as ContextT.SetErrorActionT).error,
+      };
     default:
       return state;
   }
