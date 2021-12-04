@@ -3,7 +3,7 @@
  */
 
 import * as React from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity} from 'react-native';
 import {viewStyles, textStyles} from './styles';
 
 type PropsT = {

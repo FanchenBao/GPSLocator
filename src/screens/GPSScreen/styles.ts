@@ -14,10 +14,10 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
-    height: '77%',
+    height: '70%',
   },
   contentContainer: {
-    height: '23%',
+    height: '30%',
     alignItems: 'center',
     alignSelf: 'stretch',
     paddingVertical: 10,
@@ -47,12 +47,22 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
   },
   resultContainer: {
     flex: 2,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'stretch',
-    padding: 10,
+    padding: 20,
     // borderWidth: 2,
     // borderColor: 'black',
+  },
+  leftResultContainer: {
+    flex: 1,
+  },
+  rightResultContainer: {
+    flex: 1,
+  },
+  probeRequestCountContainer: {
+    marginLeft: 20,
   },
   logoutButton: {
     padding: 6,

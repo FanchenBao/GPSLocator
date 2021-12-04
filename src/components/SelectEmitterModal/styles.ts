@@ -56,6 +56,6 @@ export const textStyles = StyleSheet.create<{[k: string]: TextStyle}>({
   },
   buttonText: {
     color: 'black',
-    fontSize: 17,
+    fontSize: 15,
   },
 });

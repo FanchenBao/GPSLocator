@@ -4,10 +4,11 @@
  */
 
 import * as React from 'react';
-import {Text, View, TouchableOpacity} from 'react-native';
+import {Text, View, TouchableOpacity, ActivityIndicator} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import Toast from 'react-native-simple-toast';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+import functions from '@react-native-firebase/functions';
 import {getLocationUpdates, getLocation} from '../../functions/location';
 import {networkStatusListener} from '../../functions/network';
 import {uploadGPS} from '../../functions/database';
@@ -40,6 +41,14 @@ export const GPSScreen: React.FC<PropsT> = _ => {
   const [nonSlideOpen, setNonSlideOpen] = React.useState<boolean>(false);
   const [selectEmitterModalVisible, setSelectEmitterModalVisible] =
     React.useState<boolean>(false);
+  const [commandResp, setCommandResp] = React.useState<{
+    macPrefix: string;
+    probeRequestRecorded: {[sensorId: string]: number};
+  }>({
+    macPrefix: '',
+    probeRequestRecorded: {unknown1: 0, unknown2: 0, unknown3: 0, unknown4: 0},
+  });
+  const [loading, setLoading] = React.useState<boolean>(false);
   const {
     highAccuracy,
     forceLocation,
@@ -48,6 +57,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
     mapType,
     hasInternet,
     selectedEmitter,
+    emitters,
     setError,
   } = React.useContext(AppContext);
 
@@ -84,6 +94,84 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       location.coords.longitude <= region.longitude + region.longitudeDelta / 2
     );
   }, [region, location]);
+
+  //////////////////////////////////////////////////////////////////////////
+  // Functions to handle communication with the emitter                   //
+  //////////////////////////////////////////////////////////////////////////
+  // Send a command to an emitter to start emitting mock probe request.
+  const emitStart = (thingName: string) => {
+    functions()
+      .httpsCallable('commandEmitterApp')({
+        cmd: 'emit_start',
+        thingName: thingName,
+      })
+      .then(resp => {
+        setLoading(false);
+        if (resp.data.status === 'success') {
+          setCommandResp({...commandResp, macPrefix: resp.data.message});
+        } else {
+          // command failed
+          records.current = [];
+          setRecording(false);
+          setError(`ERROR: ${resp.data.message}.\nRecord & emit terminated`);
+        }
+      })
+      .catch(err => {
+        setLoading(false);
+        setRecording(false);
+        records.current = [];
+        setError(`ERROR: ${err}.\nRecord & emit terminated`);
+      });
+  };
+
+  // Send a command to an emitter to terminate emitting mock probe request.
+  const emitEnd = (thingName: string) => {
+    functions()
+      .httpsCallable('commandEmitterApp')({
+        cmd: 'emit_end',
+        thingName: thingName,
+      })
+      .then(resp => {
+        setLoading(false);
+        if (resp.data.status === 'success') {
+          console.log(resp.data.message);
+        } else {
+          setError(`ERROR: ${resp.data.message}.`);
+        }
+      })
+      .catch(err => {
+        setLoading(false);
+        setError(`ERROR: ${err}.`);
+      });
+  };
+
+  // Callback function when the record & emit button is pressed
+  const onRecordEmitButtonPress = () => {
+    if (!observing) {
+      setError('Must start GPS before recording');
+    } else if (!selectedEmitter) {
+      setError('Must select an emitter before emitting');
+    } else {
+      // only record if we are already observing GPS and an emitter has been
+      // specified.
+      if (recording) {
+        stopRecording();
+        setLoading(true);
+        setCommandResp({
+          ...commandResp,
+          probeRequestRecorded: Object.fromEntries(
+            Object.keys(commandResp.probeRequestRecorded).map(k => [k, 0]),
+          ),
+        });
+        emitEnd(emitters[selectedEmitter].thingName);
+      } else {
+        setRecording(observing);
+        setLoading(true);
+        setCommandResp({...commandResp, macPrefix: ''});
+        emitStart(emitters[selectedEmitter].thingName);
+      }
+    }
+  };
 
   /////////////////
   // React Hooks //
@@ -249,18 +337,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={
-                // only record if we are already observing GPS
-                () => {
-                  if (!observing) {
-                    setError('Must start GPS before recording');
-                  } else if (!selectedEmitter) {
-                    setError('Must select an emitter before emitting');
-                  } else {
-                    recording ? stopRecording() : setRecording(observing);
-                  }
-                }
-              }
+              onPress={onRecordEmitButtonPress}
               style={[
                 viewStyles.button,
                 {
@@ -273,21 +350,39 @@ export const GPSScreen: React.FC<PropsT> = _ => {
                 },
               ]}
               disabled={!hasInternet}>
-              <Text style={textStyles.buttonText}>
-                {recording ? 'Stop Record & Emit' : 'Start Record & Emit'}
-              </Text>
+              {loading ? (
+                <ActivityIndicator size="large" color="white" />
+              ) : (
+                <Text style={textStyles.buttonText}>
+                  {recording ? 'Stop Record & Emit' : 'Start Record & Emit'}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
           <View style={viewStyles.resultContainer}>
-            <Text>Latitude: {location?.coords?.latitude || ''}</Text>
-            <Text>Longitude: {location?.coords?.longitude || ''}</Text>
-            <Text>Accuracy: {location?.coords?.accuracy}</Text>
-            <Text>
-              Timestamp:{' '}
-              {location?.timestamp
-                ? new Date(location.timestamp).toLocaleString()
-                : ''}
-            </Text>
+            <View style={viewStyles.leftResultContainer}>
+              <Text>Latitude: {location?.coords?.latitude || ''}</Text>
+              <Text>Longitude: {location?.coords?.longitude || ''}</Text>
+              <Text>Accuracy: {location?.coords?.accuracy}</Text>
+              <Text>
+                Timestamp:{' '}
+                {location?.timestamp
+                  ? new Date(location.timestamp).toLocaleString()
+                  : ''}
+              </Text>
+            </View>
+            <View style={viewStyles.rightResultContainer}>
+              <Text>{`MAC Prefix: ${commandResp.macPrefix}`}</Text>
+              <Text>Probe Request Recorded:</Text>
+              <View style={viewStyles.probeRequestCountContainer}>
+                {Object.keys(commandResp.probeRequestRecorded).map(k => (
+                  <Text
+                    key={
+                      k
+                    }>{`${k}: ${commandResp.probeRequestRecorded[k]}`}</Text>
+                ))}
+              </View>
+            </View>
           </View>
         </View>
       </HideInteraction>
