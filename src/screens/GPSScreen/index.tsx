@@ -9,7 +9,7 @@ import Geolocation from 'react-native-geolocation-service';
 import Toast from 'react-native-simple-toast';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import functions from '@react-native-firebase/functions';
-import moment from 'moment';
+import {format, utcToZonedTime} from 'date-fns-tz';
 import {getLocationUpdates, getLocation} from '../../functions/location';
 import {networkStatusListener} from '../../functions/network';
 import {uploadGPS} from '../../functions/database';
@@ -63,21 +63,21 @@ export const GPSScreen: React.FC<PropsT> = _ => {
   } = React.useContext(AppContext);
 
   const watchId = React.useRef(null);
-  const records = React.useRef<Array<GeoPosition>>([]);
+  const records = React.useRef<Array<FirestoreT.RecordT>>([]);
   const mapRef = React.useRef<MapView>(null);
 
   // The actions to perform when recording ends.
-  const stopRecording = React.useCallback(() => {
+  const stopRecording = () => {
     setRecording(false);
     if (records.current && records.current.length) {
-      uploadGPS(records.current)
+      uploadGPS(macPrefix, records.current)
         .then(() => Toast.show('GPS recordings SAVED!'))
         .catch(err => {
           console.log(err);
-          setError('Save GPS recordings FAILED. Cannot upload data!');
+          setError(`Save GPS recordings FAILED. ${err}`);
         });
     }
-  }, [setError]);
+  };
 
   // Check whether the current GPS location is within the boundary of the
   // screen. This makes use of the latitudeDelta and longitudeDelta. For a
@@ -102,12 +102,24 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       throw new Error('Probe request records is empty');
     }
     const resp = await functions().httpsCallable('probeRequestCountApp')({
-      timeStart: moment
-        .utc(new Date(records.current[0].timestamp))
-        .format('YYYY-MM-DD HH:mm:ss'),
-      timeEnd: moment
-        .utc(new Date(records.current[records.current.length - 1].timestamp))
-        .format('YYYY-MM-DD HH:mm:ss'),
+      timeStart: format(
+        utcToZonedTime(
+          new Date(records.current[0].timestamp - 1000 * 60),
+          'UTC',
+        ),
+        'yyyy-MM-dd HH:mm:ss',
+        {timeZone: 'UTC'},
+      ),
+      timeEnd: format(
+        utcToZonedTime(
+          new Date(
+            records.current[records.current.length - 1].timestamp + 1000 * 60,
+          ),
+          'UTC',
+        ),
+        'yyyy-MM-dd HH:mm:ss',
+        {timeZone: 'UTC'},
+      ),
       macPrefix: macPrefix,
     });
     if (resp.data.status === 'success') {
@@ -159,6 +171,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       })
       .then(resp => {
         if (resp.data.status === 'success') {
+          Toast.show(resp.data.message);
           // Check the probe request count for emission just completed
           queryProbeRequestCount()
             .then(() => setRecordEmitLoading(false))
@@ -222,9 +235,9 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       Geolocation.clearWatch(watchId.current);
       watchId.current = null;
       setObserving(false);
-      stopRecording();
+      setRecording(false);
     }
-  }, [stopRecording]);
+  }, []);
 
   // This is called when the home screen is unmounted. Since the app only has
   // one screen, it is the same as when the app is closed.
@@ -238,9 +251,18 @@ export const GPSScreen: React.FC<PropsT> = _ => {
   // records ref, which serves as temporary storage of all the GPS data in the
   // current recording session. This useEffect hook is triggered each time
   // location is updated.
+  // NOTE: 2021-12-04. We do not push the full content of location anymore,
+  // because it is not necessary. We will not use the GPS data for serious
+  // data analysis. Instead, we add a new field to record macPrefix. It is
+  // easier to include macPrefix at this stage than later during the data
+  // uploading stage.
   React.useEffect(() => {
     if (recording && location) {
-      records.current.push(location);
+      records.current.push({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        timestamp: location.timestamp,
+      });
     }
   }, [location, recording]);
 

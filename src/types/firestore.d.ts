@@ -7,4 +7,9 @@ declare namespace FirestoreT {
     thingName: string;
     type: 'dev' | 'prod';
   }
+  interface RecordT {
+    latitude: number;
+    longitude: number;
+    timestamp: number;
+  }
 }
