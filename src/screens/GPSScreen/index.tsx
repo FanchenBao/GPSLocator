@@ -9,6 +9,7 @@ import Geolocation from 'react-native-geolocation-service';
 import Toast from 'react-native-simple-toast';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import functions from '@react-native-firebase/functions';
+import moment from 'moment';
 import {getLocationUpdates, getLocation} from '../../functions/location';
 import {networkStatusListener} from '../../functions/network';
 import {uploadGPS} from '../../functions/database';
@@ -41,14 +42,14 @@ export const GPSScreen: React.FC<PropsT> = _ => {
   const [nonSlideOpen, setNonSlideOpen] = React.useState<boolean>(false);
   const [selectEmitterModalVisible, setSelectEmitterModalVisible] =
     React.useState<boolean>(false);
-  const [commandResp, setCommandResp] = React.useState<{
-    macPrefix: string;
-    probeRequestRecorded: {[sensorId: string]: number};
-  }>({
-    macPrefix: '',
-    probeRequestRecorded: {unknown1: 0, unknown2: 0, unknown3: 0, unknown4: 0},
-  });
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [macPrefix, setMacPrefix] = React.useState<string>('');
+  const [numOfProbeRequest, setNumOfProbeRequest] = React.useState<{
+    [sensorId: string]: number;
+  }>({'?1': 0, '?2': 0, '?3': 0, '?4': 0});
+  const [recordEmitLoading, setRecordEmitLoading] =
+    React.useState<boolean>(false);
+  const [verifyLoading, setVerifyLoading] = React.useState<boolean>(false);
+  // Context
   const {
     highAccuracy,
     forceLocation,
@@ -76,7 +77,6 @@ export const GPSScreen: React.FC<PropsT> = _ => {
           setError('Save GPS recordings FAILED. Cannot upload data!');
         });
     }
-    records.current = [];
   }, [setError]);
 
   // Check whether the current GPS location is within the boundary of the
@@ -95,20 +95,45 @@ export const GPSScreen: React.FC<PropsT> = _ => {
     );
   }, [region, location]);
 
+  // Function that queries the number of probe request recorded on the
+  // localization database.
+  const queryProbeRequestCount = async () => {
+    if (records.current.length === 0) {
+      throw new Error('Probe request records is empty');
+    }
+    const resp = await functions().httpsCallable('probeRequestCountApp')({
+      timeStart: moment
+        .utc(new Date(records.current[0].timestamp))
+        .format('YYYY-MM-DD HH:mm:ss'),
+      timeEnd: moment
+        .utc(new Date(records.current[records.current.length - 1].timestamp))
+        .format('YYYY-MM-DD HH:mm:ss'),
+      macPrefix: macPrefix,
+    });
+    if (resp.data.status === 'success') {
+      setNumOfProbeRequest(JSON.parse(resp.data.message));
+    } else {
+      setError(
+        `ERROR: Failed to query probe request count. ${resp.data.message}`,
+      );
+    }
+  };
+
   //////////////////////////////////////////////////////////////////////////
   // Functions to handle communication with the emitter                   //
   //////////////////////////////////////////////////////////////////////////
   // Send a command to an emitter to start emitting mock probe request.
-  const emitStart = (thingName: string) => {
+  const emitStart = (thingName: string, type: 'dev' | 'prod') => {
     functions()
       .httpsCallable('commandEmitterApp')({
         cmd: 'emit_start',
         thingName: thingName,
+        type: type,
       })
       .then(resp => {
-        setLoading(false);
+        setRecordEmitLoading(false);
         if (resp.data.status === 'success') {
-          setCommandResp({...commandResp, macPrefix: resp.data.message});
+          setMacPrefix(resp.data.message);
         } else {
           // command failed
           records.current = [];
@@ -117,7 +142,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         }
       })
       .catch(err => {
-        setLoading(false);
+        setRecordEmitLoading(false);
         setRecording(false);
         records.current = [];
         setError(`ERROR: ${err}.\nRecord & emit terminated`);
@@ -125,23 +150,30 @@ export const GPSScreen: React.FC<PropsT> = _ => {
   };
 
   // Send a command to an emitter to terminate emitting mock probe request.
-  const emitEnd = (thingName: string) => {
+  const emitEnd = (thingName: string, type: 'dev' | 'prod') => {
     functions()
       .httpsCallable('commandEmitterApp')({
         cmd: 'emit_end',
         thingName: thingName,
+        type: type,
       })
       .then(resp => {
-        setLoading(false);
         if (resp.data.status === 'success') {
-          console.log(resp.data.message);
+          // Check the probe request count for emission just completed
+          queryProbeRequestCount()
+            .then(() => setRecordEmitLoading(false))
+            .catch(err => {
+              setError(`ERROR: Failed to query probe request count. ${err}`);
+              setRecordEmitLoading(false);
+            });
         } else {
-          setError(`ERROR: ${resp.data.message}.`);
+          setError(`ERROR: Terminating emitter failed. ${resp.data.message}.`);
+          setRecordEmitLoading(false);
         }
       })
       .catch(err => {
-        setLoading(false);
-        setError(`ERROR: ${err}.`);
+        setError(`ERROR: Terminating emitter failed. ${err}.`);
+        setRecordEmitLoading(false);
       });
   };
 
@@ -156,19 +188,23 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       // specified.
       if (recording) {
         stopRecording();
-        setLoading(true);
-        setCommandResp({
-          ...commandResp,
-          probeRequestRecorded: Object.fromEntries(
-            Object.keys(commandResp.probeRequestRecorded).map(k => [k, 0]),
-          ),
-        });
-        emitEnd(emitters[selectedEmitter].thingName);
+        setRecordEmitLoading(true);
+        emitEnd(
+          emitters[selectedEmitter].thingName,
+          emitters[selectedEmitter].type,
+        );
       } else {
+        records.current = [];
         setRecording(observing);
-        setLoading(true);
-        setCommandResp({...commandResp, macPrefix: ''});
-        emitStart(emitters[selectedEmitter].thingName);
+        setRecordEmitLoading(true);
+        setMacPrefix('');
+        setNumOfProbeRequest(
+          Object.fromEntries(Object.keys(numOfProbeRequest).map(k => [k, 0])),
+        );
+        emitStart(
+          emitters[selectedEmitter].thingName,
+          emitters[selectedEmitter].type,
+        );
       }
     }
   };
@@ -298,66 +334,97 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       <HideInteraction onPress={() => setNonSlideOpen(false)}>
         <View style={viewStyles.contentContainer}>
           <View style={viewStyles.buttonContainer}>
-            <TouchableOpacity
-              onPress={() => setSelectEmitterModalVisible(true)}
-              style={[
-                viewStyles.button,
-                {
-                  borderWidth: 2,
-                  borderColor: 'black',
-                  width: 100,
-                },
-              ]}>
-              <Text style={[textStyles.buttonText, {color: 'black'}]}>
-                {selectedEmitter
-                  ? `Emitter-${selectedEmitter}`
-                  : 'Select Emitter'}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                observing
-                  ? removeLocationUpdates()
-                  : getLocationUpdates(
-                      setObserving,
-                      setLocation,
-                      watchId,
-                      gpsInterval,
-                      highAccuracy,
-                      forceLocation,
-                      locationDialog,
-                    );
-              }}
-              style={[
-                viewStyles.button,
-                {backgroundColor: observing ? 'red' : '#2196F3'},
-              ]}>
-              <Text style={textStyles.buttonText}>
-                {observing ? 'Stop GPS' : 'Start GPS'}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={onRecordEmitButtonPress}
-              style={[
-                viewStyles.button,
-                {
-                  width: 130,
-                  backgroundColor: hasInternet
-                    ? recording
-                      ? 'red'
-                      : '#40ff00'
-                    : 'grey',
-                },
-              ]}
-              disabled={!hasInternet}>
-              {loading ? (
-                <ActivityIndicator size="large" color="white" />
-              ) : (
-                <Text style={textStyles.buttonText}>
-                  {recording ? 'Stop Record & Emit' : 'Start Record & Emit'}
+            <View style={viewStyles.leftButtonContainer}>
+              <TouchableOpacity
+                onPress={() => setSelectEmitterModalVisible(true)}
+                style={[
+                  viewStyles.button,
+                  {
+                    borderWidth: 1,
+                    borderColor: 'black',
+                  },
+                ]}>
+                <Text style={[textStyles.buttonText, {color: 'black'}]}>
+                  {selectedEmitter
+                    ? `Emitter-${selectedEmitter}`
+                    : 'Select Emitter'}
                 </Text>
-              )}
-            </TouchableOpacity>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setVerifyLoading(true);
+                  queryProbeRequestCount()
+                    .then(() => setVerifyLoading(false))
+                    .catch(err => {
+                      setError(
+                        `ERROR: Failed to query probe request count. ${err}`,
+                      );
+                      setVerifyLoading(false);
+                    });
+                }}
+                style={[
+                  viewStyles.button,
+                  {
+                    borderWidth: 1,
+                    borderColor: 'black',
+                    width: 150,
+                  },
+                ]}>
+                {verifyLoading ? (
+                  <ActivityIndicator size="small" color="black" />
+                ) : (
+                  <Text style={[textStyles.buttonText, {color: 'black'}]}>
+                    Verify Last Emission
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
+            <View style={viewStyles.rightButtonContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  observing
+                    ? removeLocationUpdates()
+                    : getLocationUpdates(
+                        setObserving,
+                        setLocation,
+                        watchId,
+                        gpsInterval,
+                        highAccuracy,
+                        forceLocation,
+                        locationDialog,
+                      );
+                }}
+                style={[
+                  viewStyles.button,
+                  {backgroundColor: observing ? 'red' : '#2196F3'},
+                ]}>
+                <Text style={textStyles.buttonText}>
+                  {observing ? 'Stop GPS' : 'Start GPS'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={onRecordEmitButtonPress}
+                style={[
+                  viewStyles.button,
+                  {
+                    width: 150,
+                    backgroundColor: hasInternet
+                      ? recording
+                        ? 'red'
+                        : '#40ff00'
+                      : 'grey',
+                  },
+                ]}
+                disabled={!hasInternet}>
+                {recordEmitLoading ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text style={textStyles.buttonText}>
+                    {recording ? 'Stop Record & Emit' : 'Start Record & Emit'}
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
           <View style={viewStyles.resultContainer}>
             <View style={viewStyles.leftResultContainer}>
@@ -372,14 +439,11 @@ export const GPSScreen: React.FC<PropsT> = _ => {
               </Text>
             </View>
             <View style={viewStyles.rightResultContainer}>
-              <Text>{`MAC Prefix: ${commandResp.macPrefix}`}</Text>
+              <Text>{`MAC Prefix: ${macPrefix}`}</Text>
               <Text>Probe Request Recorded:</Text>
               <View style={viewStyles.probeRequestCountContainer}>
-                {Object.keys(commandResp.probeRequestRecorded).map(k => (
-                  <Text
-                    key={
-                      k
-                    }>{`${k}: ${commandResp.probeRequestRecorded[k]}`}</Text>
+                {Object.keys(numOfProbeRequest).map(k => (
+                  <Text key={k}>{`sensor-${k}: ${numOfProbeRequest[k]}`}</Text>
                 ))}
               </View>
             </View>
