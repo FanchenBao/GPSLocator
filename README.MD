@@ -1,3 +1,5 @@
+# IMPORTANT: Do NOT merge this branch to master!
+
 # Description
 
 This branch contains an extended version of the original app. The extended app supports data collection capabilities that are specific to a research endeavor. In addition to recording GPS data from the device, this app is also able to trigger an emitter to emit mock probe request, terminate the emission, and verify whether the mock probe requests have been collected and recorded. The goal of this app is to streamline the data collection process by automating all the intricate and repetitive steps.
@@ -32,3 +34,6 @@ In the case where a session of probe request emission fails, we can press the `D
 
 7. How does the app talk to the emitter and query the probe request database?
 The app calls specific Firebase functions, which then calls the API exposed by the emitter for simple command-and-response interaction, or creates connection to the probe request database and makes the desired data query. The repo for the Firebase functions can be accessed [here](), but it is a private repo.
+
+8. Is the app versioning still the same in this branch?
+No, the versioning for the app builds in this branch is different from that in master. All app versions in this branch ends with the chars `-ext`.
