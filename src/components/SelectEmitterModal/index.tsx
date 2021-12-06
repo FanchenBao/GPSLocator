@@ -46,7 +46,7 @@ export const SelectEmitterModal: React.FC<PropsT> = props => {
         </View>
         <View style={viewStyles.buttonContainer}>
           <TouchableOpacity
-            style={[viewStyles.button, {borderWidth: 2, borderColor: 'balack'}]}
+            style={[viewStyles.button, {borderWidth: 2, borderColor: 'black'}]}
             onPress={onCancelPress}>
             <Text style={textStyles.buttonText}>Cancel</Text>
           </TouchableOpacity>

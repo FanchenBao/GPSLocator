@@ -20,6 +20,7 @@ import {HideInteraction} from '../../components/hideInteraction';
 import UserLogo from '../../assets/user.svg';
 import {AppContext} from '../../context/store';
 import {SelectEmitterModal} from '../../components/SelectEmitterModal';
+import {DeleteEmissionModal} from '../../components/DeleteEmissionModal';
 
 // import types
 import {StackScreenProps} from '@react-navigation/stack';
@@ -42,7 +43,9 @@ export const GPSScreen: React.FC<PropsT> = _ => {
   const [nonSlideOpen, setNonSlideOpen] = React.useState<boolean>(false);
   const [selectEmitterModalVisible, setSelectEmitterModalVisible] =
     React.useState<boolean>(false);
-  const [macPrefix, setMacPrefix] = React.useState<string>('');
+  const [deleteEmissionModalVisible, setDeleteEmissionModalVisible] =
+    React.useState<boolean>(false);
+  const [macPrefix, setMacPrefix] = React.useState<string>('foo');
   const [numOfProbeRequest, setNumOfProbeRequest] = React.useState<{
     [sensorId: string]: number;
   }>({'?1': 0, '?2': 0, '?3': 0, '?4': 0});
@@ -400,6 +403,25 @@ export const GPSScreen: React.FC<PropsT> = _ => {
                   </Text>
                 )}
               </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setDeleteEmissionModalVisible(true)}
+                style={[
+                  viewStyles.button,
+                  {
+                    borderWidth: 1,
+                    borderColor: macPrefix === '' ? 'lightgrey' : 'red',
+                    width: 150,
+                  },
+                ]}
+                disabled={macPrefix === ''}>
+                <Text
+                  style={[
+                    textStyles.buttonText,
+                    {color: macPrefix === '' ? 'lightgrey' : 'red'},
+                  ]}>
+                  Delete Last Emission
+                </Text>
+              </TouchableOpacity>
             </View>
             <View style={viewStyles.rightButtonContainer}>
               <TouchableOpacity
@@ -418,7 +440,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
                 }}
                 style={[
                   viewStyles.button,
-                  {backgroundColor: observing ? 'red' : '#2196F3'},
+                  {backgroundColor: observing ? 'red' : '#2196F3', height: 40},
                 ]}>
                 <Text style={textStyles.buttonText}>
                   {observing ? 'Stop GPS' : 'Start GPS'}
@@ -430,6 +452,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
                   viewStyles.button,
                   {
                     width: 150,
+                    height: 40,
                     backgroundColor: hasInternet
                       ? recording
                         ? 'red'
@@ -484,6 +507,11 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       <SelectEmitterModal
         visible={selectEmitterModalVisible}
         onCancelPress={() => setSelectEmitterModalVisible(false)}
+      />
+      <DeleteEmissionModal
+        visible={deleteEmissionModalVisible}
+        onCancelPress={() => setDeleteEmissionModalVisible(false)}
+        macPrefix={macPrefix}
       />
     </View>
   );
