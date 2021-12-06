@@ -45,7 +45,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
     React.useState<boolean>(false);
   const [deleteEmissionModalVisible, setDeleteEmissionModalVisible] =
     React.useState<boolean>(false);
-  const [macPrefix, setMacPrefix] = React.useState<string>('foo');
+  const [macPrefix, setMacPrefix] = React.useState<string>('boo');
   const [numOfProbeRequest, setNumOfProbeRequest] = React.useState<{
     [sensorId: string]: number;
   }>({'?1': 0, '?2': 0, '?3': 0, '?4': 0});
@@ -77,7 +77,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         .then(() => Toast.show('GPS recordings SAVED!'))
         .catch(err => {
           console.log(err);
-          setError(`Save GPS recordings FAILED. ${err}`);
+          setError(`Save GPS recordings FAILED. \n${err}`);
         });
     }
   };
@@ -511,6 +511,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       <DeleteEmissionModal
         visible={deleteEmissionModalVisible}
         onCancelPress={() => setDeleteEmissionModalVisible(false)}
+        onDeleteSuccess={() => setMacPrefix('')}
         macPrefix={macPrefix}
       />
     </View>

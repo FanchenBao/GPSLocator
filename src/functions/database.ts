@@ -45,3 +45,12 @@ export const getEmitters = async (): Promise<{
     querySnapshot.docs.map(ele => [ele.id, ele.data()]),
   );
 };
+
+export const deleteEmission = async (macPrefix: string): Promise<void> => {
+  const docSnapshot = await db.collection('data').doc(macPrefix).get();
+  if (docSnapshot.exists) {
+    await docSnapshot.ref.delete();
+  } else {
+    throw new Error(`Emission prefixed by "${macPrefix}" does NOT exist!`);
+  }
+};
