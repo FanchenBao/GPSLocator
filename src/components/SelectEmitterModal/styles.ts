@@ -40,8 +40,8 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
     justifyContent: 'center',
     alignItems: 'center',
     width: 80,
-    borderRadius: 15,
-    paddingVertical: 3,
+    borderRadius: 10,
+    paddingVertical: 4,
   },
 });
 

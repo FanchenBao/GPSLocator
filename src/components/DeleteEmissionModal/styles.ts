@@ -42,7 +42,7 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
     alignItems: 'center',
     width: 80,
     borderRadius: 10,
-    paddingVertical: 3,
+    paddingVertical: 4,
   },
 });
 

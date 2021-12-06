@@ -46,11 +46,21 @@ export const getEmitters = async (): Promise<{
   );
 };
 
-export const deleteEmission = async (macPrefix: string): Promise<void> => {
-  const docSnapshot = await db.collection('data').doc(macPrefix).get();
+export const deleteEmissionMacPrefix = async (
+  macPrefix: string,
+): Promise<void> => {
+  const date = format(new Date(), 'MM-dd-yyyy');
+  const docSnapshot = await db.collection('data').doc(date).get();
   if (docSnapshot.exists) {
-    await docSnapshot.ref.delete();
+    const data = docSnapshot.data() as FirestoreT.GPSRecordsT;
+    if (!(macPrefix in data)) {
+      throw new Error(`Emission prefixed by "${macPrefix}" does NOT exist!`);
+    }
+    await db
+      .collection('data')
+      .doc(date)
+      .update({[macPrefix]: firestore.FieldValue.delete()});
   } else {
-    throw new Error(`Emission prefixed by "${macPrefix}" does NOT exist!`);
+    throw new Error(`Emission document with id "${date}" does NOT exist!`);
   }
 };

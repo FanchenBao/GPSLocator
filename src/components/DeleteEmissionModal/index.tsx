@@ -10,7 +10,7 @@ import {viewStyles, textStyles} from './styles';
 import {Text, View, TouchableOpacity, TextInput, Keyboard} from 'react-native';
 import Toast from 'react-native-simple-toast';
 import {DarkModalBase} from '../DarkModalBase/index';
-import {deleteEmission} from '../../functions/database';
+import {deleteEmissionMacPrefix} from '../../functions/database';
 import {AppContext} from '../../context/store';
 import {HideInteraction} from '../hideInteraction';
 
@@ -71,10 +71,10 @@ export const DeleteEmissionModal: React.FC<PropsT> = props => {
                 setConfirmEnable(false);
                 onCancelPress();
                 try {
-                  await deleteEmission(macPrefix);
+                  await deleteEmissionMacPrefix(macPrefix);
                   onDeleteSuccess();
                   Toast.show(
-                    `Emission prefixed with "${macPrefix}"" has been deleted`,
+                    `Emission prefixed with "${macPrefix}" has been deleted`,
                   );
                 } catch (err) {
                   setError(

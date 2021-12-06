@@ -45,7 +45,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
     React.useState<boolean>(false);
   const [deleteEmissionModalVisible, setDeleteEmissionModalVisible] =
     React.useState<boolean>(false);
-  const [macPrefix, setMacPrefix] = React.useState<string>('boo');
+  const [macPrefix, setMacPrefix] = React.useState<string>('');
   const [numOfProbeRequest, setNumOfProbeRequest] = React.useState<{
     [sensorId: string]: number;
   }>({'?1': 0, '?2': 0, '?3': 0, '?4': 0});
@@ -409,15 +409,19 @@ export const GPSScreen: React.FC<PropsT> = _ => {
                   viewStyles.button,
                   {
                     borderWidth: 1,
-                    borderColor: macPrefix === '' ? 'lightgrey' : 'red',
+                    borderColor:
+                      macPrefix === '' || recording ? 'lightgrey' : 'red',
                     width: 150,
                   },
                 ]}
-                disabled={macPrefix === ''}>
+                disabled={macPrefix === '' || recording}>
                 <Text
                   style={[
                     textStyles.buttonText,
-                    {color: macPrefix === '' ? 'lightgrey' : 'red'},
+                    {
+                      color:
+                        macPrefix === '' || recording ? 'lightgrey' : 'red',
+                    },
                   ]}>
                   Delete Last Emission
                 </Text>
@@ -473,11 +477,11 @@ export const GPSScreen: React.FC<PropsT> = _ => {
           </View>
           <View style={viewStyles.resultContainer}>
             <View style={viewStyles.leftResultContainer}>
-              <Text>Latitude: {location?.coords?.latitude || ''}</Text>
-              <Text>Longitude: {location?.coords?.longitude || ''}</Text>
+              <Text>Lat: {location?.coords?.latitude || ''}</Text>
+              <Text>Lng: {location?.coords?.longitude || ''}</Text>
               <Text>Accuracy: {location?.coords?.accuracy}</Text>
               <Text>
-                Timestamp:{' '}
+                {'\n'}
                 {location?.timestamp
                   ? new Date(location.timestamp).toLocaleString()
                   : ''}
@@ -511,7 +515,12 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       <DeleteEmissionModal
         visible={deleteEmissionModalVisible}
         onCancelPress={() => setDeleteEmissionModalVisible(false)}
-        onDeleteSuccess={() => setMacPrefix('')}
+        onDeleteSuccess={() => {
+          setMacPrefix('');
+          setNumOfProbeRequest(
+            Object.fromEntries(Object.keys(numOfProbeRequest).map(k => [k, 0])),
+          );
+        }}
         macPrefix={macPrefix}
       />
     </View>

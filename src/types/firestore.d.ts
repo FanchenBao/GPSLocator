@@ -12,4 +12,7 @@ declare namespace FirestoreT {
     longitude: number;
     timestamp: number;
   }
+  interface GPSRecordsT {
+    [macPrefix: string]: Array<RecordT>;
+  }
 }

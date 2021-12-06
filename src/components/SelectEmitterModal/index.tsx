@@ -46,17 +46,27 @@ export const SelectEmitterModal: React.FC<PropsT> = props => {
         </View>
         <View style={viewStyles.buttonContainer}>
           <TouchableOpacity
-            style={[viewStyles.button, {borderWidth: 2, borderColor: 'black'}]}
+            style={[viewStyles.button, {borderWidth: 1, borderColor: 'black'}]}
             onPress={onCancelPress}>
             <Text style={textStyles.buttonText}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[viewStyles.button, {backgroundColor: '#2196F3'}]}
+            style={[
+              viewStyles.button,
+              {backgroundColor: localEmitter === '' ? 'lightgrey' : '#2196F3'},
+            ]}
             onPress={() => {
               setSelectedEmitter(localEmitter);
               onCancelPress();
-            }}>
-            <Text style={textStyles.buttonText}>OK</Text>
+            }}
+            disabled={localEmitter === ''}>
+            <Text
+              style={[
+                textStyles.buttonText,
+                {color: localEmitter === '' ? 'white' : 'black'},
+              ]}>
+              OK
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
