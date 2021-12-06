@@ -36,4 +36,4 @@ In the case where a session of probe request emission fails, we can press the `D
 The app calls specific Firebase functions, which then calls the API exposed by the emitter for simple command-and-response interaction, or creates connection to the probe request database and makes the desired data query. The repo for the Firebase functions can be accessed [here](), but it is a private repo.
 
 8. Is the app versioning still the same in this branch?
-No, the versioning for the app builds in this branch is different from that in master. All app versions in this branch ends with the chars `-ext`.
+No, the versioning for the app builds in this branch is different from that in master. All app versions in this branch ends with the chars `-data-collect`.
