@@ -40,7 +40,7 @@ In the case where a session of probe request emission fails, we can press the `D
 
 ## How does the app talk to the emitter and query the probe request database?
 
-The app calls specific Firebase functions, which then calls the API exposed by the emitter for simple command-and-response interaction, or creates connection to the probe request database and makes the desired data query. The repo for the Firebase functions can be accessed [here](), but it is a private repo.
+The app calls specific Firebase functions, which then calls the API exposed by the emitter for simple command-and-response interaction, or creates connection to the probe request database and makes the desired data query. The repo for the Firebase functions can be accessed [here](https://github.com/I-SENSE/GPSLocator_firebase), but it is a private repo.
 
 ## Is the app versioning still the same in this branch?
 
