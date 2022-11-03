@@ -18,6 +18,7 @@ const initialState: ContextT.StateT = {
   error: '',
   hasInternet: true,
   selectedEmitter: '',
+  selectedSensorType: '',
   setHighAccuracy: () => {
     // Placeholder for the set function, which will be defined in Provider
   },
@@ -43,6 +44,9 @@ const initialState: ContextT.StateT = {
     // Placeholder for the set function, which will be defined in Provider
   },
   setSelectedEmitter: () => {
+    // Placeholder for the set function, which will be defined in Provider
+  },
+  setSelectedSensorType: () => {
     // Placeholder for the set function, which will be defined in Provider
   },
 };
@@ -83,6 +87,12 @@ export const Provider: React.FC = ({children}) => {
     }, []),
     setSelectedEmitter: React.useCallback((val: string) => {
       dispatch({type: actions.SET_SELECTED_EMITTER, selectedEmitter: val});
+    }, []),
+    setSelectedSensorType: React.useCallback((val: string) => {
+      dispatch({
+        type: actions.SET_SELECTED_SENSOR_TYPE,
+        selectedSensorType: val,
+      });
     }, []),
   };
 

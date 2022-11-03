@@ -10,35 +10,50 @@ import {viewStyles, textStyles} from './styles';
 import {Text, View, TouchableOpacity, FlatList} from 'react-native';
 import {DarkModalBase} from '../DarkModalBase/index';
 import {ListItem} from './listItem';
-import {AppContext} from '../../context/store';
 
 type PropsT = {
   onCancelPress: () => void;
   visible: boolean;
+  selectedItem: string;
+  setSelectedItem: (item: string) => void;
+  data: Array<string>;
+  itemDisplayPrefix: string;
+  title: string;
 };
 
-export const SelectEmitterModal: React.FC<PropsT> = props => {
-  const {onCancelPress, visible} = props;
-  const {emitters, selectedEmitter, setSelectedEmitter} =
-    React.useContext(AppContext);
-  const [localEmitter, setLocaEmitter] = React.useState(selectedEmitter);
+/**
+ * Use this modal to create a list of string-based options to select. Only one
+ * option can be selected. Once selected, press the OK button to confirm and
+ * exit the modal.
+ */
+export const SelectStringItemModal: React.FC<PropsT> = props => {
+  const {
+    onCancelPress,
+    visible,
+    selectedItem,
+    setSelectedItem,
+    data,
+    itemDisplayPrefix,
+    title,
+  } = props;
+  const [localSelectedItem, setLocalSelectedItem] =
+    React.useState(selectedItem);
 
   return (
     <DarkModalBase visible={visible} onRequestClose={onCancelPress}>
       <View style={viewStyles.contentContainer}>
         <View style={viewStyles.headerContainer}>
-          <Text style={textStyles.headerText}>Select Emitter</Text>
+          <Text style={textStyles.headerText}>{title}</Text>
         </View>
         <View style={viewStyles.listContainer}>
           <FlatList
-            data={Object.keys(emitters)}
+            data={data}
             renderItem={({item}) => (
               <ListItem
-                isSelected={localEmitter === item}
+                isSelected={localSelectedItem === item}
                 id={item}
-                onPress={id => {
-                  setLocaEmitter(id);
-                }}
+                displayPrefix={itemDisplayPrefix}
+                onPress={id => setLocalSelectedItem(id)}
               />
             )}
             keyExtractor={item => item}
@@ -53,17 +68,20 @@ export const SelectEmitterModal: React.FC<PropsT> = props => {
           <TouchableOpacity
             style={[
               viewStyles.button,
-              {backgroundColor: localEmitter === '' ? 'lightgrey' : '#2196F3'},
+              {
+                backgroundColor:
+                  localSelectedItem === '' ? 'lightgrey' : '#2196F3',
+              },
             ]}
             onPress={() => {
-              setSelectedEmitter(localEmitter);
+              setSelectedItem(localSelectedItem);
               onCancelPress();
             }}
-            disabled={localEmitter === ''}>
+            disabled={localSelectedItem === ''}>
             <Text
               style={[
                 textStyles.buttonText,
-                {color: localEmitter === '' ? 'white' : 'black'},
+                {color: localSelectedItem === '' ? 'white' : 'black'},
               ]}>
               OK
             </Text>

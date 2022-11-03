@@ -57,6 +57,12 @@ export const reducer = (
         selectedEmitter: (action as ContextT.SetSelectedEmitterActionT)
           .selectedEmitter,
       };
+    case actions.SET_SELECTED_SENSOR_TYPE:
+      return {
+        ...state,
+        selectedSensorType: (action as ContextT.SetSelectedSensorTypeActionT)
+          .selectedSensorType,
+      };
     default:
       return state;
   }

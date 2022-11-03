@@ -19,7 +19,7 @@ import {Profile} from '../../components/Profile/index';
 import {HideInteraction} from '../../components/hideInteraction';
 import UserLogo from '../../assets/user.svg';
 import {AppContext} from '../../context/store';
-import {SelectEmitterModal} from '../../components/SelectEmitterModal';
+import {SelectStringItemModal} from '../../components/SelectStringItemModal';
 import {DeleteEmissionModal} from '../../components/DeleteEmissionModal';
 
 // import types
@@ -45,6 +45,8 @@ export const GPSScreen: React.FC<PropsT> = _ => {
     React.useState<boolean>(false);
   const [deleteEmissionModalVisible, setDeleteEmissionModalVisible] =
     React.useState<boolean>(false);
+  const [selectSensorTypeModalVisible, setSelectSensorTypeModalVisible] =
+    React.useState<boolean>(false);
   const [macPrefix, setMacPrefix] = React.useState<string>('');
   const [numOfProbeRequest, setNumOfProbeRequest] = React.useState<{
     [sensorId: string]: number;
@@ -60,7 +62,10 @@ export const GPSScreen: React.FC<PropsT> = _ => {
     gpsInterval,
     mapType,
     hasInternet,
+    setSelectedEmitter,
     selectedEmitter,
+    setSelectedSensorType,
+    selectedSensorType,
     emitters,
     setError,
   } = React.useContext(AppContext);
@@ -360,21 +365,38 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         <View style={viewStyles.contentContainer}>
           <View style={viewStyles.buttonContainer}>
             <View style={viewStyles.leftButtonContainer}>
-              <TouchableOpacity
-                onPress={() => setSelectEmitterModalVisible(true)}
-                style={[
-                  viewStyles.button,
-                  {
-                    borderWidth: 1,
-                    borderColor: 'black',
-                  },
-                ]}>
-                <Text style={[textStyles.buttonText, {color: 'black'}]}>
-                  {selectedEmitter
-                    ? `Emitter-${selectedEmitter}`
-                    : 'Select Emitter'}
-                </Text>
-              </TouchableOpacity>
+              <View style={viewStyles.leftButtonTopContainer}>
+                <TouchableOpacity
+                  onPress={() => setSelectEmitterModalVisible(true)}
+                  style={[
+                    viewStyles.button,
+                    {
+                      borderWidth: 1,
+                      borderColor: 'black',
+                    },
+                  ]}>
+                  <Text style={[textStyles.buttonText, {color: 'black'}]}>
+                    {selectedEmitter
+                      ? `Emitter-${selectedEmitter}`
+                      : 'Select Emitter'}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setSelectSensorTypeModalVisible(true)}
+                  style={[
+                    viewStyles.button,
+                    {
+                      borderWidth: 1,
+                      borderColor: 'black',
+                    },
+                  ]}>
+                  <Text style={[textStyles.buttonText, {color: 'black'}]}>
+                    {selectedSensorType
+                      ? `Sensor-${selectedSensorType}`
+                      : 'Select Sensor Type'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
               <TouchableOpacity
                 onPress={() => {
                   setVerifyLoading(true);
@@ -423,7 +445,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
                         macPrefix === '' || recording ? 'lightgrey' : 'red',
                     },
                   ]}>
-                  Delete Last Emission
+                  Del Last Emission
                 </Text>
               </TouchableOpacity>
             </View>
@@ -508,10 +530,36 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         onDrawerPeek={() => setNonSlideOpen(false)}>
         <Profile widthPct={0.7} />
       </SideDrawer>
-      <SelectEmitterModal
+      <SelectStringItemModal
         visible={selectEmitterModalVisible}
         onCancelPress={() => setSelectEmitterModalVisible(false)}
+        selectedItem={selectedEmitter}
+        setSelectedItem={setSelectedEmitter}
+        data={Object.keys(emitters)}
+        itemDisplayPrefix="Emitter"
+        title="Select Emitter"
       />
+
+      {/* This modal is used to select which type of sensor is going to
+      capture the * mock probe request. When the test is run on campus, both the
+      sensors and * the emitter are of dev type. However, when we move the test
+      to WPB, the * emitters remain dev, yet the sensors are of prod type. This
+      modal allows * the tester to choose which type of sensor is receiving the
+      signal. This * choice will affect where probe request count is queried,
+      i.e. either from * the dev or prod database. The choice of sensor type
+      does not, however, have * any impact on where the mock probe requests
+      land, because that is determined * by the sensors, which is out of the
+      control of this app. */}
+      <SelectStringItemModal
+        visible={selectSensorTypeModalVisible}
+        onCancelPress={() => setSelectSensorTypeModalVisible(false)}
+        selectedItem={selectedSensorType}
+        setSelectedItem={setSelectedSensorType}
+        data={['dev', 'prod']}
+        itemDisplayPrefix="Type"
+        title="Select Sensor Type"
+      />
+
       <DeleteEmissionModal
         visible={deleteEmissionModalVisible}
         onCancelPress={() => setDeleteEmissionModalVisible(false)}

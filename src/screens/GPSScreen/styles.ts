@@ -38,6 +38,9 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
+  leftButtonTopContainer: {
+    flexDirection: 'row',
+  },
   rightButtonContainer: {
     flex: 1,
     alignItems: 'flex-end',
@@ -46,9 +49,9 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
   button: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 120,
+    // width: 120,
     borderRadius: 10,
-    paddingVertical: 5,
+    padding: 5,
   },
   resultContainer: {
     flex: 1.2,
@@ -100,7 +103,7 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
 
 export const textStyles = StyleSheet.create<{[k: string]: TextStyle}>({
   buttonText: {
-    fontSize: 15,
+    fontSize: 14,
     color: 'white',
   },
   link: {

@@ -9,6 +9,7 @@ import {viewStyles, textStyles} from './styles';
 type PropsT = {
   isSelected: boolean;
   id: string;
+  displayPrefix: string;
   onPress: (id: string) => void;
 };
 
@@ -16,7 +17,7 @@ type PropsT = {
 A component to render each list item for schools and campuses drop down.
  */
 export const ListItem: React.FC<PropsT> = props => {
-  const {isSelected, id, onPress} = props;
+  const {isSelected, id, displayPrefix, onPress} = props;
   return (
     <TouchableOpacity
       onPress={() => onPress(id)}
@@ -24,7 +25,7 @@ export const ListItem: React.FC<PropsT> = props => {
         viewStyles.listButton,
         {backgroundColor: isSelected ? '#2196F3' : 'white'},
       ]}>
-      <Text style={textStyles.listText}>{`Emitter-${id}`}</Text>
+      <Text style={textStyles.listText}>{`${displayPrefix}-${id}`}</Text>
     </TouchableOpacity>
   );
 };

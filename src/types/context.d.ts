@@ -13,6 +13,7 @@ declare namespace ContextT {
     error: string;
     hasInternet: boolean;
     selectedEmitter: string;
+    selectedSensorType: string;
     setHighAccuracy: (val: boolean) => void;
     setForceLocation: (val: boolean) => void;
     setLocationDialog: (val: boolean) => void;
@@ -22,6 +23,7 @@ declare namespace ContextT {
     setError: (val: string) => void;
     setHasInternet: (val: boolean) => void;
     setSelectedEmitter: (val: string) => void;
+    setSelectedSensorType: (val: string) => void;
   }
 
   interface SetHighAccuracyActionT {
@@ -60,6 +62,10 @@ declare namespace ContextT {
     type: string;
     selectedEmitter: string;
   }
+  interface SetSelectedSensorTypeActionT {
+    type: string;
+    selectedSensorType: string;
+  }
   type ActionT =
     | SetHighAccuracyActionT
     | SetForceLocationActionT
@@ -69,5 +75,6 @@ declare namespace ContextT {
     | SetEmittersActionT
     | SetErrorActionT
     | SetHasInternetActionT
-    | SetSelectedEmitterActionT;
+    | SetSelectedEmitterActionT
+    | SetSelectedSensorTypeActionT;
 }
