@@ -20,7 +20,8 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
     height: '38%',
     alignItems: 'center',
     alignSelf: 'stretch',
-    padding: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     backgroundColor: 'white',
     // borderWidth: 2,
     // borderColor: 'blue',
@@ -37,9 +38,8 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
     flex: 1,
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-  },
-  leftButtonTopContainer: {
-    flexDirection: 'row',
+    // borderWidth: 2,
+    // borderColor: 'red',
   },
   rightButtonContainer: {
     flex: 1,
@@ -49,28 +49,29 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
   button: {
     justifyContent: 'center',
     alignItems: 'center',
-    // width: 120,
     borderRadius: 10,
     padding: 5,
   },
   resultContainer: {
-    flex: 1.2,
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     alignSelf: 'stretch',
-    paddingTop: 20,
     // borderWidth: 2,
     // borderColor: 'black',
   },
   leftResultContainer: {
-    flex: 1,
+    // flex: 1,
   },
   rightResultContainer: {
-    flex: 1,
+    // flex: 1,
   },
   probeRequestCountContainer: {
-    marginLeft: 20,
+    flex: 1,
+    marginTop: 2,
+    // borderWidth: 1,
+    // borderColor: 'blue',
   },
   logoutButton: {
     padding: 6,
@@ -103,7 +104,7 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
 
 export const textStyles = StyleSheet.create<{[k: string]: TextStyle}>({
   buttonText: {
-    fontSize: 14,
+    fontSize: 15,
     color: 'white',
   },
   link: {

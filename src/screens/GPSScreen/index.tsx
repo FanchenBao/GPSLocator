@@ -4,7 +4,13 @@
  */
 
 import * as React from 'react';
-import {Text, View, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+  FlatList,
+} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import Toast from 'react-native-simple-toast';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
@@ -50,7 +56,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
   const [macPrefix, setMacPrefix] = React.useState<string>('');
   const [numOfProbeRequest, setNumOfProbeRequest] = React.useState<{
     [sensorId: string]: number;
-  }>({'?1': 0, '?2': 0, '?3': 0, '?4': 0});
+  }>({'??': 0});
   const [recordEmitLoading, setRecordEmitLoading] =
     React.useState<boolean>(false);
   const [verifyLoading, setVerifyLoading] = React.useState<boolean>(false);
@@ -204,6 +210,8 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       setError('Must start GPS before recording');
     } else if (!selectedEmitter) {
       setError('Must select an emitter before emitting');
+    } else if (!selectedSensorType) {
+      setError('Must select a sensor type before emitting');
     } else {
       // only record if we are already observing GPS and an emitter has been
       // specified.
@@ -365,38 +373,36 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         <View style={viewStyles.contentContainer}>
           <View style={viewStyles.buttonContainer}>
             <View style={viewStyles.leftButtonContainer}>
-              <View style={viewStyles.leftButtonTopContainer}>
-                <TouchableOpacity
-                  onPress={() => setSelectEmitterModalVisible(true)}
-                  style={[
-                    viewStyles.button,
-                    {
-                      borderWidth: 1,
-                      borderColor: 'black',
-                    },
-                  ]}>
-                  <Text style={[textStyles.buttonText, {color: 'black'}]}>
-                    {selectedEmitter
-                      ? `Emitter-${selectedEmitter}`
-                      : 'Select Emitter'}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setSelectSensorTypeModalVisible(true)}
-                  style={[
-                    viewStyles.button,
-                    {
-                      borderWidth: 1,
-                      borderColor: 'black',
-                    },
-                  ]}>
-                  <Text style={[textStyles.buttonText, {color: 'black'}]}>
-                    {selectedSensorType
-                      ? `Sensor-${selectedSensorType}`
-                      : 'Select Sensor Type'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                onPress={() => setSelectEmitterModalVisible(true)}
+                style={[
+                  viewStyles.button,
+                  {
+                    borderWidth: 1,
+                    borderColor: 'black',
+                  },
+                ]}>
+                <Text style={[textStyles.buttonText, {color: 'black'}]}>
+                  {selectedEmitter
+                    ? `Emitter-${selectedEmitter}`
+                    : 'Select Emitter'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setSelectSensorTypeModalVisible(true)}
+                style={[
+                  viewStyles.button,
+                  {
+                    borderWidth: 1,
+                    borderColor: 'black',
+                  },
+                ]}>
+                <Text style={[textStyles.buttonText, {color: 'black'}]}>
+                  {selectedSensorType
+                    ? `Sensor-${selectedSensorType}`
+                    : 'Select Sensor Type'}
+                </Text>
+              </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
                   setVerifyLoading(true);
@@ -513,9 +519,15 @@ export const GPSScreen: React.FC<PropsT> = _ => {
               <Text>{`MAC Prefix: ${macPrefix}`}</Text>
               <Text>Probe Request Recorded:</Text>
               <View style={viewStyles.probeRequestCountContainer}>
-                {Object.keys(numOfProbeRequest).map(k => (
-                  <Text key={k}>{`sensor-${k}: ${numOfProbeRequest[k]}`}</Text>
-                ))}
+                <FlatList
+                  data={Object.keys(numOfProbeRequest)}
+                  renderItem={({item}) => (
+                    <TouchableOpacity>
+                      <Text>{`sensor-${item}: ${numOfProbeRequest[item]}`}</Text>
+                    </TouchableOpacity>
+                  )}
+                  keyExtractor={item => item}
+                />
               </View>
             </View>
           </View>
