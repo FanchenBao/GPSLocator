@@ -135,6 +135,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         {timeZone: 'UTC'},
       ),
       macPrefix: macPrefix,
+      type: selectedSensorType,
     });
     if (resp.data.status === 'success') {
       setNumOfProbeRequest(JSON.parse(resp.data.message));
@@ -568,7 +569,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         selectedItem={selectedSensorType}
         setSelectedItem={setSelectedSensorType}
         data={['dev', 'prod']}
-        itemDisplayPrefix="Type"
+        itemDisplayPrefix="Sensor"
         title="Select Sensor Type"
       />
 
