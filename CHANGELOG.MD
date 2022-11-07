@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [v0.5.1-data-collect] - 2022-11-03
 
+### Changed
+- Fix the android build issue, which is reported in detail here: https://github.com/facebook/react-native/issues/35210
+
 ### Added
 - Add capability to choose which type of sensors are capturing probe request (prod or dev). This allows the app to query either the prod or dev database.
 - Make the display of the probe request count query results scrollable. This is to accommodate the number of prod sensors to join the data collection effort.
