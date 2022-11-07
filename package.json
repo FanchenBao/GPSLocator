@@ -1,6 +1,6 @@
 {
   "name": "gpslocator",
-  "version": "0.5.0-data-collect",
+  "version": "0.5.1-data-collect",
   "private": true,
   "scripts": {
     "android": "npx react-native run-android",
