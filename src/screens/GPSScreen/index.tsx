@@ -28,6 +28,7 @@ import {AppContext} from '../../context/store';
 import {SelectStringItemModal} from '../../components/SelectStringItemModal';
 import {DeleteEmissionModal} from '../../components/DeleteEmissionModal';
 import {EmitCounter} from '../../components/EmitCounter';
+import {Timer} from '../../components/Timer';
 
 // import types
 import {StackScreenProps} from '@react-navigation/stack';
@@ -54,7 +55,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
     React.useState<boolean>(false);
   const [selectSensorTypeModalVisible, setSelectSensorTypeModalVisible] =
     React.useState<boolean>(false);
-  const [macPrefix, setMacPrefix] = React.useState<string>('11:11:11');
+  const [macPrefix, setMacPrefix] = React.useState<string>('');
   const [numOfProbeRequest, setNumOfProbeRequest] = React.useState<{
     [sensorId: string]: number;
   }>({'??': 0});
@@ -62,6 +63,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
     React.useState<boolean>(false);
   const [verifyLoading, setVerifyLoading] = React.useState<boolean>(false);
   const [emitCount, setEmitCount] = React.useState<number>(0);
+  const [timerOn, setTimerOn] = React.useState<boolean>(false);
   // Context
   const {
     highAccuracy,
@@ -219,6 +221,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       // only record if we are already observing GPS and an emitter has been
       // specified.
       if (recording) {
+        setTimerOn(false);
         stopRecording();
         setRecordEmitLoading(true);
         emitEnd(
@@ -226,6 +229,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
           emitters[selectedEmitter].type,
         );
       } else {
+        setTimerOn(true);
         records.current = [];
         setRecording(observing);
         setRecordEmitLoading(true);
@@ -592,6 +596,11 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       we have triggered emission. The timer allows us to keep track of duration
       of each emission without having to resort to an external source. */}
       <EmitCounter count={emitCount} onCounterPress={() => setEmitCount(0)} />
+      <Timer
+        totalTime={20}
+        turnOffTimer={() => setTimerOn(false)}
+        timerOn={timerOn}
+      />
     </View>
   );
 };
