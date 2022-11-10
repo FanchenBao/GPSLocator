@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [v0.6.0-data-collect] - 2022-11-10
+
+### Added
+- Add a timer which is triggered when emission starts and terminated when emission ends. This simplifies the data collection process as we don't have to resort to an outside timer to keep track of the emission duration.
+- Add an emission counter that keeps track of the number of times we have triggered emission consecutively. A built-in mechanism ensures that once we have reached the max number of emission repeats, no more emission can be made unless we reset the counter. This helps reduce the chance of error in data collection.
+- The emit duration and emit repeats values are stored in the database.
+
 ## [v0.5.1-data-collect] - 2022-11-03
 
 ### Changed
