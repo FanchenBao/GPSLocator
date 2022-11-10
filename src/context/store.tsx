@@ -19,6 +19,7 @@ const initialState: ContextT.StateT = {
   hasInternet: true,
   selectedEmitter: '',
   selectedSensorType: '',
+  appConfig: {emitDuration: 20, emitRepeats: 3}, // default values
   setHighAccuracy: () => {
     // Placeholder for the set function, which will be defined in Provider
   },
@@ -47,6 +48,9 @@ const initialState: ContextT.StateT = {
     // Placeholder for the set function, which will be defined in Provider
   },
   setSelectedSensorType: () => {
+    // Placeholder for the set function, which will be defined in Provider
+  },
+  setAppConfig: () => {
     // Placeholder for the set function, which will be defined in Provider
   },
 };
@@ -93,6 +97,9 @@ export const Provider: React.FC = ({children}) => {
         type: actions.SET_SELECTED_SENSOR_TYPE,
         selectedSensorType: val,
       });
+    }, []),
+    setAppConfig: React.useCallback((val: FirestoreT.AppConfigT) => {
+      dispatch({type: actions.SET_APP_CONFIG, appConfig: val});
     }, []),
   };
 

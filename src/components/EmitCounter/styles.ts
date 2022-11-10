@@ -13,7 +13,6 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
     position: 'absolute',
     borderColor: 'black',
     borderWidth: 1,
-    backgroundColor: 'yellow',
     padding: 10,
     borderRadius: 10,
     bottom: 0.4 * height,

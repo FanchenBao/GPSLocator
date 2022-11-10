@@ -14,6 +14,7 @@ declare namespace ContextT {
     hasInternet: boolean;
     selectedEmitter: string;
     selectedSensorType: string;
+    appConfig: FirestoreT.AppConfigT;
     setHighAccuracy: (val: boolean) => void;
     setForceLocation: (val: boolean) => void;
     setLocationDialog: (val: boolean) => void;
@@ -24,6 +25,7 @@ declare namespace ContextT {
     setHasInternet: (val: boolean) => void;
     setSelectedEmitter: (val: string) => void;
     setSelectedSensorType: (val: string) => void;
+    setAppConfig: (val: FirestoreT.AppConfigT) => void;
   }
 
   interface SetHighAccuracyActionT {
@@ -66,6 +68,10 @@ declare namespace ContextT {
     type: string;
     selectedSensorType: string;
   }
+  interface SetAppConfigActionT {
+    type: string;
+    appConfig: FirestoreT.AppConfigT;
+  }
   type ActionT =
     | SetHighAccuracyActionT
     | SetForceLocationActionT
@@ -76,5 +82,6 @@ declare namespace ContextT {
     | SetErrorActionT
     | SetHasInternetActionT
     | SetSelectedEmitterActionT
-    | SetSelectedSensorTypeActionT;
+    | SetSelectedSensorTypeActionT
+    | SetAppConfigActionT;
 }

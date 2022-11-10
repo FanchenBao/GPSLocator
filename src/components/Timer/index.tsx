@@ -7,9 +7,10 @@
 
 import * as React from 'react';
 import {viewStyles, textStyles} from './styles';
-import {Text, TouchableOpacity, Vibration} from 'react-native';
+import {Text, TouchableOpacity} from 'react-native';
 import {ConfirmModal} from '../ConfirmModal';
 import {TimerIcon} from '../SVG/timerIcon';
+import {rainbow} from '../../constant/colors';
 
 type PropsT = {
   timerOn: boolean;
@@ -37,19 +38,9 @@ export const Timer: React.FC<PropsT> = props => {
   }, [timerOn, timeLeft]);
 
   React.useEffect(() => {
-    const rainbow = [
-      'red',
-      'orange',
-      'yellow',
-      'green',
-      'cyan',
-      'blue',
-      'purple',
-    ];
     if (timerOn && timeLeft === 0) {
       const interval = setInterval(() => {
         setBgdColor(rainbow[Math.floor(Math.random() * rainbow.length)]);
-        Vibration.vibrate(200);
       }, 500);
       return () => clearInterval(interval);
     }
@@ -64,7 +55,6 @@ export const Timer: React.FC<PropsT> = props => {
 
   return (
     <>
-      {/* <View style={[viewStyles.timerContainer, ]}> */}
       <TouchableOpacity
         style={[viewStyles.timer, {backgroundColor: bgdColor}]}
         onPress={() => {
@@ -75,7 +65,6 @@ export const Timer: React.FC<PropsT> = props => {
         <TimerIcon height={35} width={27} scale={0.06} />
         <Text style={textStyles.timerText}>{timeLeft}</Text>
       </TouchableOpacity>
-      {/* </View> */}
 
       <ConfirmModal
         visible={confirmModalVisible}

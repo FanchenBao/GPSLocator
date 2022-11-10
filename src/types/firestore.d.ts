@@ -15,4 +15,9 @@ declare namespace FirestoreT {
   interface GPSRecordsT {
     [macPrefix: string]: Array<RecordT>;
   }
+
+  interface AppConfigT {
+    emitDuration: number;
+    emitRepeats: number;
+  }
 }

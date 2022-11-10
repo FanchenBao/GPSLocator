@@ -44,6 +44,23 @@ This is the screen that shows the Google Map, allows user to capture and record
 GPS, and offer a few configurations.
  */
 export const GPSScreen: React.FC<PropsT> = _ => {
+  // Context
+  const {
+    highAccuracy,
+    forceLocation,
+    locationDialog,
+    gpsInterval,
+    mapType,
+    hasInternet,
+    setSelectedEmitter,
+    selectedEmitter,
+    setSelectedSensorType,
+    selectedSensorType,
+    emitters,
+    setError,
+    appConfig,
+  } = React.useContext(AppContext);
+  // local state
   const [observing, setObserving] = React.useState<boolean>(false);
   const [recording, setRecording] = React.useState<boolean>(false); // record all GPS data in one session
   const [location, setLocation] = React.useState<GeoPosition | null>(null); // record current GPS data
@@ -64,22 +81,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
   const [verifyLoading, setVerifyLoading] = React.useState<boolean>(false);
   const [emitCount, setEmitCount] = React.useState<number>(0);
   const [timerOn, setTimerOn] = React.useState<boolean>(false);
-  // Context
-  const {
-    highAccuracy,
-    forceLocation,
-    locationDialog,
-    gpsInterval,
-    mapType,
-    hasInternet,
-    setSelectedEmitter,
-    selectedEmitter,
-    setSelectedSensorType,
-    selectedSensorType,
-    emitters,
-    setError,
-  } = React.useContext(AppContext);
-
+  // refs
   const watchId = React.useRef(null);
   const records = React.useRef<Array<FirestoreT.RecordT>>([]);
   const mapRef = React.useRef<MapView>(null);
@@ -596,9 +598,13 @@ export const GPSScreen: React.FC<PropsT> = _ => {
       collection. The emitter counter allows us to quickly view how many times
       we have triggered emission. The timer allows us to keep track of duration
       of each emission without having to resort to an external source. */}
-      <EmitCounter count={emitCount} onCounterPress={() => setEmitCount(0)} />
+      <EmitCounter
+        count={emitCount}
+        onCounterPress={() => setEmitCount(0)}
+        maxCount={appConfig.emitRepeats}
+      />
       <Timer
-        totalTime={20}
+        totalTime={appConfig.emitDuration}
         turnOffTimer={() => setTimerOn(false)}
         timerOn={timerOn}
       />

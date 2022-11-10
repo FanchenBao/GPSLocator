@@ -63,6 +63,11 @@ export const reducer = (
         selectedSensorType: (action as ContextT.SetSelectedSensorTypeActionT)
           .selectedSensorType,
       };
+    case actions.SET_APP_CONFIG:
+      return {
+        ...state,
+        appConfig: (action as ContextT.SetAppConfigActionT).appConfig,
+      };
     default:
       return state;
   }

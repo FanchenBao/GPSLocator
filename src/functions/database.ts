@@ -64,3 +64,8 @@ export const deleteEmissionMacPrefix = async (
     throw new Error(`Emission document with id "${date}" does NOT exist!`);
   }
 };
+
+export const getAppConfig = async (): Promise<FirestoreT.AppConfigT> => {
+  const docSnapshot = await db.collection('app').doc('config').get();
+  return docSnapshot.data() as FirestoreT.AppConfigT;
+};

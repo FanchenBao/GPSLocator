@@ -13,7 +13,7 @@ import {HomeScreen} from './src/screens/HomeScreen/index';
 import {GPSScreen} from './src/screens/GPSScreen/index';
 import auth from '@react-native-firebase/auth';
 import {AppContext} from './src/context/store';
-import {getEmitters} from './src/functions/database';
+import {getAppConfig, getEmitters} from './src/functions/database';
 import {ErrorModal} from './src/errors/ErrorModal';
 import {networkStatusListener} from './src/functions/network';
 
@@ -25,7 +25,7 @@ const App: React.FC = () => {
   const [user, setUser] = React.useState<FirebaseT.UserT>();
 
   // Context
-  const {setEmitters, error, setError, setHasInternet} =
+  const {setEmitters, error, setError, setHasInternet, setAppConfig} =
     React.useContext(AppContext);
 
   // Handle user state changes
@@ -53,6 +53,18 @@ const App: React.FC = () => {
         setError('Getting emitter list failed.');
       });
   }, [setEmitters, setError]);
+
+  // Download app config
+  React.useEffect(() => {
+    getAppConfig()
+      .then(appConfig => {
+        setAppConfig(appConfig);
+      })
+      .catch(e => {
+        console.log(e);
+        setError('Geetting app config failed.');
+      });
+  }, [setAppConfig, setError]);
 
   // Check internet connection
   React.useEffect(() => {
