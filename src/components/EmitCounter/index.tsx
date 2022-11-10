@@ -9,7 +9,6 @@ import * as React from 'react';
 import {viewStyles, textStyles} from './styles';
 import {Text, TouchableOpacity} from 'react-native';
 import {ConfirmModal} from '../ConfirmModal';
-import {rainbow} from '../../constant/colors';
 
 type PropsT = {
   onCounterPress: () => void;
@@ -23,27 +22,14 @@ type PropsT = {
  * the reset request is confirmed.
  */
 export const EmitCounter: React.FC<PropsT> = props => {
-  const {count, onCounterPress, maxCount} = props;
+  const {count, onCounterPress} = props;
   const [confirmModalVisible, setConfirmModalVisible] =
     React.useState<boolean>(false);
-  const defaultBgdColor = 'yellow';
-  const [bgdColor, setBgdColor] = React.useState<string>(defaultBgdColor);
-
-  React.useEffect(() => {
-    if (count === maxCount) {
-      const interval = setInterval(() => {
-        setBgdColor(rainbow[Math.floor(Math.random() * rainbow.length)]);
-      }, 500);
-      return () => clearInterval(interval);
-    } else if (count === 0) {
-      setBgdColor(defaultBgdColor);
-    }
-  }, [count, maxCount]);
 
   return (
     <>
       <TouchableOpacity
-        style={[viewStyles.emitCounter, {backgroundColor: bgdColor}]}
+        style={viewStyles.emitCounter}
         onPress={() => {
           if (count > 0) {
             setConfirmModalVisible(true);

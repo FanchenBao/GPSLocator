@@ -231,19 +231,25 @@ export const GPSScreen: React.FC<PropsT> = _ => {
           emitters[selectedEmitter].type,
         );
       } else {
-        setTimerOn(true);
-        setEmitCount(emitCount + 1);
-        records.current = [];
-        setRecording(observing);
-        setRecordEmitLoading(true);
-        setMacPrefix('');
-        setNumOfProbeRequest(
-          Object.fromEntries(Object.keys(numOfProbeRequest).map(k => [k, 0])),
-        );
-        emitStart(
-          emitters[selectedEmitter].thingName,
-          emitters[selectedEmitter].type,
-        );
+        if (emitCount === appConfig.emitRepeats) {
+          setError(
+            `You have already done ${appConfig.emitRepeats} emissions. Move on to the next spot and reset the counter!`,
+          );
+        } else {
+          setTimerOn(true);
+          setEmitCount(emitCount + 1);
+          records.current = [];
+          setRecording(observing);
+          setRecordEmitLoading(true);
+          setMacPrefix('');
+          setNumOfProbeRequest(
+            Object.fromEntries(Object.keys(numOfProbeRequest).map(k => [k, 0])),
+          );
+          emitStart(
+            emitters[selectedEmitter].thingName,
+            emitters[selectedEmitter].type,
+          );
+        }
       }
     }
   };
