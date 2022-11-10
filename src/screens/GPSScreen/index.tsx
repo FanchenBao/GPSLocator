@@ -90,7 +90,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
   const stopRecording = () => {
     setRecording(false);
     if (records.current && records.current.length) {
-      uploadGPS(macPrefix, records.current)
+      uploadGPS(macPrefix, selectedEmitter, records.current)
         .then(() => Toast.show('GPS recordings SAVED!'))
         .catch(err => {
           console.log(err);

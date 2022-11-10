@@ -14,19 +14,22 @@ Upload recorded GPS data to firestore.
 This is basically a wrapper for the firestore API. NOTE that the document name
 is the date and each entry in the document has the MAC address prefix as the
 field name.
+@param macPrefix mac address prefix
+@param emitter alias ID of the sensor used as emitter. For instance 06, 09, etc.
 @param gpsRecords An array of GeoPositions provided by react-native-geolocation-service
   that are recorded for a period of time.
 @return A void promise.
  */
 export const uploadGPS = async (
   macPrefix: string,
+  emitter: string,
   gpsRecords: Array<FirestoreT.RecordT>,
 ): Promise<void> => {
   const date = format(new Date(), 'MM-dd-yyyy');
   return await db
     .collection('data')
     .doc(date)
-    .set({[macPrefix]: gpsRecords}, {merge: true});
+    .set({[emitter]: {[macPrefix]: gpsRecords}}, {merge: true});
 };
 
 /**
