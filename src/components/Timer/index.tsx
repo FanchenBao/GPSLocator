@@ -26,7 +26,8 @@ export const Timer: React.FC<PropsT> = props => {
   const [confirmModalVisible, setConfirmModalVisible] =
     React.useState<boolean>(false);
   const [timeLeft, setTimeLeft] = React.useState<number>(totalTime);
-  const [bgdColor, setBgdColor] = React.useState<string>('yellow');
+  const defaultBgdColor = 'yellow';
+  const [bgdColor, setBgdColor] = React.useState<string>(defaultBgdColor);
 
   React.useEffect(() => {
     if (timerOn && timeLeft > 0) {
@@ -36,7 +37,7 @@ export const Timer: React.FC<PropsT> = props => {
   }, [timerOn, timeLeft]);
 
   React.useEffect(() => {
-    const allColors = [
+    const rainbow = [
       'red',
       'orange',
       'yellow',
@@ -47,7 +48,7 @@ export const Timer: React.FC<PropsT> = props => {
     ];
     if (timerOn && timeLeft === 0) {
       const interval = setInterval(() => {
-        setBgdColor(allColors[Math.floor(Math.random() * allColors.length)]);
+        setBgdColor(rainbow[Math.floor(Math.random() * rainbow.length)]);
         Vibration.vibrate(200);
       }, 500);
       return () => clearInterval(interval);
@@ -56,7 +57,7 @@ export const Timer: React.FC<PropsT> = props => {
 
   React.useEffect(() => {
     if (!timerOn) {
-      setBgdColor('yellow');
+      setBgdColor(defaultBgdColor);
       setTimeLeft(totalTime);
     }
   }, [timerOn, totalTime]);
@@ -64,7 +65,6 @@ export const Timer: React.FC<PropsT> = props => {
   return (
     <>
       <View style={[viewStyles.timerContainer, {backgroundColor: bgdColor}]}>
-        <TimerIcon height="90%" width="55%" scale={0.06} />
         <TouchableOpacity
           style={[viewStyles.timer]}
           onPress={() => {
@@ -72,6 +72,7 @@ export const Timer: React.FC<PropsT> = props => {
               setConfirmModalVisible(true);
             }
           }}>
+          <TimerIcon height="90%" width="55%" scale={0.06} />
           <Text style={textStyles.timerText}>{timeLeft}</Text>
         </TouchableOpacity>
       </View>

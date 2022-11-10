@@ -230,6 +230,7 @@ export const GPSScreen: React.FC<PropsT> = _ => {
         );
       } else {
         setTimerOn(true);
+        setEmitCount(emitCount + 1);
         records.current = [];
         setRecording(observing);
         setRecordEmitLoading(true);
