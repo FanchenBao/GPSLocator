@@ -3,26 +3,24 @@ import {View} from 'react-native';
 import Svg, {Path} from 'react-native-svg';
 
 type PropsT = {
-  height?: string;
-  width?: string;
+  height?: number;
+  width?: number;
   scale?: number;
 };
 
 export const TimerIcon = (props: PropsT) => {
-  const {width = '100%', height = '100%', scale = 1.0} = props;
+  const {width = 100, height = 100, scale = 1.0} = props;
   return (
     <View
       style={{
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        width: width,
+        height: height,
         // borderColor: 'blue',
         // borderWidth: 2,
       }}>
-      <Svg
-        // style={{borderColor: 'blue', borderWidth: 2}}
-        width={width}
-        height={height}>
+      <Svg>
         <Path
           // @ts-expect-error: error stemps from react-native-svg
           style={{

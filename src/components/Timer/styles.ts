@@ -9,7 +9,10 @@ import {Dimensions} from 'react-native';
 const {height, width} = Dimensions.get('window');
 
 export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
-  timerContainer: {
+  timerContainer: {},
+  timer: {
+    flex: 1,
+    flexDirection: 'row',
     position: 'absolute',
     borderColor: 'black',
     borderWidth: 1,
@@ -17,12 +20,7 @@ export const viewStyles = StyleSheet.create<{[k: string]: ViewStyle}>({
     borderRadius: 10,
     bottom: 0.5 * height,
     width: 0.3 * width,
-  },
-  timer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
+    justifyContent: 'space-evenly',
     // borderColor: 'red',
     // borderWidth: 2,
   },

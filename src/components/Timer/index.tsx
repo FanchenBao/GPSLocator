@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import {viewStyles, textStyles} from './styles';
-import {View, Text, TouchableOpacity, Vibration} from 'react-native';
+import {Text, TouchableOpacity, Vibration} from 'react-native';
 import {ConfirmModal} from '../ConfirmModal';
 import {TimerIcon} from '../SVG/timerIcon';
 
@@ -64,18 +64,18 @@ export const Timer: React.FC<PropsT> = props => {
 
   return (
     <>
-      <View style={[viewStyles.timerContainer, {backgroundColor: bgdColor}]}>
-        <TouchableOpacity
-          style={[viewStyles.timer]}
-          onPress={() => {
-            if (timeLeft < totalTime) {
-              setConfirmModalVisible(true);
-            }
-          }}>
-          <TimerIcon height="90%" width="55%" scale={0.06} />
-          <Text style={textStyles.timerText}>{timeLeft}</Text>
-        </TouchableOpacity>
-      </View>
+      {/* <View style={[viewStyles.timerContainer, ]}> */}
+      <TouchableOpacity
+        style={[viewStyles.timer, {backgroundColor: bgdColor}]}
+        onPress={() => {
+          if (timeLeft < totalTime) {
+            setConfirmModalVisible(true);
+          }
+        }}>
+        <TimerIcon height={35} width={27} scale={0.06} />
+        <Text style={textStyles.timerText}>{timeLeft}</Text>
+      </TouchableOpacity>
+      {/* </View> */}
 
       <ConfirmModal
         visible={confirmModalVisible}
