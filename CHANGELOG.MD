@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add an emission counter that keeps track of the number of times we have triggered emission consecutively. A built-in mechanism ensures that once we have reached the max number of emission repeats, no more emission can be made unless we reset the counter. This helps reduce the chance of error in data collection.
 - The emit duration and emit repeats values are stored in the database.
 
+### Changed
+- When uploading GPS data, also include the emitter ID. This allows us to do data collection with multiple emitters, as each emitter has its designated space on Firestore for recording GPS and mac address prefix data.
+
 ## [v0.5.1-data-collect] - 2022-11-03
 
 ### Changed
