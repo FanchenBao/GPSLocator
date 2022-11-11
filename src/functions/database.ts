@@ -51,18 +51,19 @@ export const getEmitters = async (): Promise<{
 
 export const deleteEmissionMacPrefix = async (
   macPrefix: string,
+  emitter: string,
 ): Promise<void> => {
   const date = format(new Date(), 'MM-dd-yyyy');
   const docSnapshot = await db.collection('data').doc(date).get();
   if (docSnapshot.exists) {
     const data = docSnapshot.data() as FirestoreT.GPSRecordsT;
-    if (!(macPrefix in data)) {
+    if (!(macPrefix in data[emitter])) {
       throw new Error(`Emission prefixed by "${macPrefix}" does NOT exist!`);
     }
     await db
       .collection('data')
       .doc(date)
-      .update({[macPrefix]: firestore.FieldValue.delete()});
+      .update({[`${emitter}.${macPrefix}`]: firestore.FieldValue.delete()});
   } else {
     throw new Error(`Emission document with id "${date}" does NOT exist!`);
   }

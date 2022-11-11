@@ -19,10 +19,11 @@ type PropsT = {
   onDeleteSuccess: () => void;
   visible: boolean;
   macPrefix: string;
+  emitter: string;
 };
 
 export const DeleteEmissionModal: React.FC<PropsT> = props => {
-  const {onCancelPress, onDeleteSuccess, visible, macPrefix} = props;
+  const {onCancelPress, onDeleteSuccess, visible, macPrefix, emitter} = props;
   const [confirmEnable, setConfirmEnable] = React.useState<boolean>(false);
   const {setError} = React.useContext(AppContext);
 
@@ -71,7 +72,7 @@ export const DeleteEmissionModal: React.FC<PropsT> = props => {
                 setConfirmEnable(false);
                 onCancelPress();
                 try {
-                  await deleteEmissionMacPrefix(macPrefix);
+                  await deleteEmissionMacPrefix(macPrefix, emitter);
                   onDeleteSuccess();
                   Toast.show(
                     `Emission prefixed with "${macPrefix}" has been deleted`,

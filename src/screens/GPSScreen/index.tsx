@@ -596,8 +596,10 @@ export const GPSScreen: React.FC<PropsT> = _ => {
           setNumOfProbeRequest(
             Object.fromEntries(Object.keys(numOfProbeRequest).map(k => [k, 0])),
           );
+          setEmitCount(emitCount - 1); // decrement emit count
         }}
         macPrefix={macPrefix}
+        emitter={selectedEmitter}
       />
 
       {/* The following two components improve quality of life during data
