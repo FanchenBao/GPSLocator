@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [v0.6.1-data-collect] - 2022-11-11
+### Changed
+- Fix the error in delete last emission due to the inclusion of emitter as top level key.
+
 ## [v0.6.0-data-collect] - 2022-11-10
 
 ### Added
